@@ -85,16 +85,15 @@ SupplyCountType BuildOrderSearchGoal::supplyRequired() const
     return _supplyRequiredVal;
 }
 
-std::string BuildOrderSearchGoal::toString() const
+void BuildOrderSearchGoal::printGoal() const
 {
-    std::stringstream ss;
-    ss << "\nSearch Goal Information\n\n";
+    printf("\nSearch Goal Information\n\n");
 
     for (ActionID a(0); a<_goalUnits.size(); ++a)
     {
         if (_goalUnits[a] > 0)
         {
-            ss << "        REQ " << _goalUnits[a] << " " <<  ActionTypes::GetActionType(_race, a).getName() << "\n";
+            printf("        REQ %7d %s\n",_goalUnits[a], ActionTypes::GetActionType(_race, a).getName().c_str());
         }
     }
 
@@ -102,11 +101,9 @@ std::string BuildOrderSearchGoal::toString() const
     {
         if (_goalUnitsMax[a] > 0)
         {
-            ss << "        MAX " << _goalUnitsMax[a]  << " " << ActionTypes::GetActionType(_race, a).getName() << "\n";
+            printf("        MAX %7d %s\n", _goalUnitsMax[a], ActionTypes::GetActionType(_race, a).getName().c_str());
         }
     }
-
-    return ss.str();
 }
 
 bool BuildOrderSearchGoal::isAchievedBy(const GameState & state)

@@ -24,7 +24,7 @@ namespace Assert
     void ReportFailure(const char * condition, const char * file, int line, const char * msg, ...)
     {
         char messageBuffer[1024] = "";
-        if (msg != nullptr)
+        if (msg != NULL)
         {
             va_list args;
             va_start(args, msg);
@@ -45,11 +45,7 @@ namespace Assert
 
         std::cerr << ss.str();
         BWAPI::Broodwar->printf("%s", ss.str().c_str());
-
-        if (Config::Debug::LogAssertToErrorFile)
-        {
-            Logger::LogAppendToFile(Config::Debug::ErrorLogFilename, ss.str());
-        }
+        Logger::LogAppendToFile(Config::Debug::ErrorLogFilename, ss.str());
     }
 }
 }

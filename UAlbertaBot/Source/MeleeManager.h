@@ -14,16 +14,11 @@ public:
 
 	MeleeManager();
 	~MeleeManager() {}
-	void executeMicro(const BWAPI::Unitset & targets);
+	void executeMicro(const std::vector<BWAPI::UnitInterface *> & targets);
 
-	BWAPI::Unit chooseTarget(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets, std::map<BWAPI::Unit, int> & numTargeting);
-	BWAPI::Unit closestMeleeUnit(BWAPI::Unit target, const BWAPI::Unitset & meleeUnitToAssign);
-	int getAttackPriority(BWAPI::Unit attacker, BWAPI::Unit unit);
-	BWAPI::Unit getTarget(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets);
-    bool meleeUnitShouldRetreat(BWAPI::Unit meleeUnit, const BWAPI::Unitset & targets);
-    std::pair<BWAPI::Unit, BWAPI::Unit> findClosestUnitPair(const BWAPI::Unitset & attackers, const BWAPI::Unitset & targets);
-
-    void assignTargetsNew(const BWAPI::Unitset & targets);
-    void assignTargetsOld(const BWAPI::Unitset & targets);
+	BWAPI::UnitInterface* chooseTarget(BWAPI::UnitInterface* meleeUnit, const std::vector<BWAPI::UnitInterface *> & targets, std::map<BWAPI::UnitInterface*, int> & numTargeting);
+	BWAPI::UnitInterface* closestMeleeUnit(BWAPI::UnitInterface* target, std::set<BWAPI::UnitInterface*> & meleeUnitToAssign);
+	int getAttackPriority(BWAPI::UnitInterface* unit);
+	BWAPI::UnitInterface* getTarget(BWAPI::UnitInterface* meleeUnit, std::vector<BWAPI::UnitInterface *> & targets);
 };
 }

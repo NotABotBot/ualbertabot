@@ -11,66 +11,81 @@ namespace UAlbertaBot
 {
 typedef unsigned char Action;
 
-class ProductionManager
+class CompareWhenStarted 
 {
-    ProductionManager();
-    
-    BuildOrderQueue     _queue;
-    BWAPI::TilePosition _predictedTilePosition;
-    bool                _enemyCloakedDetected;
-    bool                _assignedWorkerForThisBuilding;
-    bool                _haveLocationForThisBuilding;
-    
-    BWAPI::Unit         getClosestUnitToPosition(const BWAPI::Unitset & units,BWAPI::Position closestTo);
-    BWAPI::Unit         selectUnitOfType(BWAPI::UnitType type,BWAPI::Position closestTo = BWAPI::Position(0,0));
-
-    bool                hasResources(BWAPI::UnitType type);
-    bool                canMake(BWAPI::UnitType type);
-    bool                hasNumCompletedUnitType(BWAPI::UnitType type,int num);
-    bool                meetsReservedResources(MetaType type);
-    void                setBuildOrder(const BuildOrder & buildOrder);
-    void                create(BWAPI::Unit producer,BuildOrderItem & item);
-    void                manageBuildOrderQueue();
-    void                performCommand(BWAPI::UnitCommandType t);
-    bool                canMakeNow(BWAPI::Unit producer,MetaType t);
-    void                predictWorkerMovement(const Building & b);
-
-    bool                detectBuildOrderDeadlock();
-
-    int                 getFreeMinerals();
-    int                 getFreeGas();
-    bool                canPlanBuildOrderNow() const;
 
 public:
 
-    static ProductionManager &	Instance();
+	CompareWhenStarted() {}
 
-    void        drawQueueInformation(std::map<BWAPI::UnitType,int> & numUnits,int x,int y,int index);
-    void        update();
-    void        onUnitMorph(BWAPI::Unit unit);
-    void        onUnitDestroy(BWAPI::Unit unit);
-    void        performBuildOrderSearch();
-    void        drawProductionInformation(int x,int y);
-    void        setSearchGoal(MetaPairVector & goal);
-    void        queueGasSteal();
-
-    BWAPI::Unit getProducer(MetaType t,BWAPI::Position closestTo = BWAPI::Positions::None);
+	// the sorting operator
+	bool operator() (BWAPI::UnitInterface* u1, BWAPI::UnitInterface* u2) 
+	{
+		int startedU1 = BWAPI::Broodwar->getFrameCount() - (u1->getType().buildTime() - u1->getRemainingBuildTime());
+		int startedU2 = BWAPI::Broodwar->getFrameCount() - (u2->getType().buildTime() - u2->getRemainingBuildTime());
+		return startedU1 > startedU2;
+    }
 };
 
-
-class CompareWhenStarted
+class ProductionManager 
 {
+	ProductionManager();
 
+	bool						initialBuildSet;
+
+	int                         time_check = 0;
+
+	std::map<char, MetaType>	typeCharMap;
+	std::vector<MetaPair>       searchGoal;
+
+	bool						assignedWorkerForThisBuilding;
+	bool						haveLocationForThisBuilding;
+	int							reservedMinerals, reservedGas;
+	bool						enemyCloakedDetected;
+	bool						rushDetected;
+
+	BWAPI::TilePosition			predictedTilePosition;
+    BWAPI::UnitInterface*       getClosestUnitToPosition(std::set<BWAPI::UnitInterface*> & units, BWAPI::Position closestTo);
+	BWAPI::UnitInterface*		selectUnitOfType(BWAPI::UnitType type, BWAPI::Position closestTo = BWAPI::Position(0,0));
+	BuildOrderQueue				queue;
+
+	bool						contains(std::vector<BWAPI::UnitInterface *> & units, BWAPI::UnitInterface* unit);
+	void						populateTypeCharMap();
+	bool						hasResources(BWAPI::UnitType type);
+	bool						canMake(BWAPI::UnitType type);
+	bool						hasNumCompletedUnitType(BWAPI::UnitType type, int num);
+	bool						meetsReservedResources(MetaType type);
+	void						setBuildOrder(const BuildOrder & buildOrder);
+	void						createMetaType(BWAPI::UnitInterface* producer, MetaType type);
+	void						manageBuildOrderQueue();
+	void						performCommand(BWAPI::UnitCommandType t);
+	bool						canMakeNow(BWAPI::UnitInterface* producer, MetaType t);
+	void						predictWorkerMovement(const Building & b);
+
+	bool						detectBuildOrderDeadlock();
+
+	int							getFreeMinerals();
+	int							getFreeGas();
+	bool						_runningOpeningBook;
 public:
 
-    CompareWhenStarted() {}
+	static ProductionManager &	Instance();
 
-    // the sorting operator
-    bool operator() (BWAPI::Unit u1,BWAPI::Unit u2)
-    {
-        int startedU1 = BWAPI::Broodwar->getFrameCount() - (u1->getType().buildTime() - u1->getRemainingBuildTime());
-        int startedU2 = BWAPI::Broodwar->getFrameCount() - (u2->getType().buildTime() - u2->getRemainingBuildTime());
-        return startedU1 > startedU2;
-    }
+	void						drawQueueInformation(std::map<BWAPI::UnitType, int> & numUnits, int x, int y, int index);
+	void						update();
+
+	void						onGameEnd();
+	void						onUnitMorph(BWAPI::UnitInterface* unit);
+	void						onUnitDestroy(BWAPI::UnitInterface* unit);
+	bool						runningOpeningBook() const { return _runningOpeningBook; };
+	const BuildOrderQueue&		getBuildQueue() const { return queue; };
+	void						purgeQueue() { queue.clearAll(); };
+
+    BWAPI::UnitInterface*       getProducer(MetaType t, BWAPI::Position closestTo = BWAPI::Positions::None);
+
+	void						performBuildOrderSearch(const std::vector<MetaPair> & goal);
+	void						performBuildOrderSearch();
+	void						drawProductionInformation(int x, int y);
+	void						setSearchGoal(MetaPairVector & goal);
 };
 }

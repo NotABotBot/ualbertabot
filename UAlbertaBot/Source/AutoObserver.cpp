@@ -6,7 +6,7 @@ using namespace UAlbertaBot;
 AutoObserver::AutoObserver()
     : _unitFollowFrames(0)
     , _cameraLastMoved(0)
-    , _observerFollowingUnit(nullptr)
+    , _observerFollowingUnit(NULL)
 {
 
 }
@@ -17,7 +17,7 @@ void AutoObserver::onFrame()
 
     if (pickUnitToFollow)
     {
-	    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+	    for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->self()->getUnits())
 	    {
 		    if (unit->isUnderAttack() || unit->isAttacking())
 		    {
@@ -32,7 +32,7 @@ void AutoObserver::onFrame()
 
     if (pickUnitToFollow)
     {
-	    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+	    for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->self()->getUnits())
 	    {
 		    if (unit->isBeingConstructed() && (unit->getRemainingBuildTime() < 12))
 		    {
@@ -47,7 +47,7 @@ void AutoObserver::onFrame()
 
     if (pickUnitToFollow)
     {
-	    for (auto & unit : BWAPI::Broodwar->self()->getUnits())
+	    for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->self()->getUnits())
 	    {
 		    if (WorkerManager::Instance().isWorkerScout(unit))
 		    {

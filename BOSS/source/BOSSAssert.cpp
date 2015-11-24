@@ -44,6 +44,7 @@ namespace Assert
         lastErrorMessage = messageBuffer;
 
         std::cerr << ss.str();  
+        Logger::LogAppendToFile(BOSS_LOGFILE, ss.str());
 
         throw BOSSException(ss.str());
     }

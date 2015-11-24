@@ -10,28 +10,6 @@ NaiveBuildOrderSearch::NaiveBuildOrderSearch(const GameState & state, const Buil
 
 }
 
-bool NaiveBuildOrderSearch::checkUnsolvable()
-{
-    const ActionType & worker = ActionTypes::GetWorker(_state.getRace());
-    const ActionType & supply = ActionTypes::GetSupplyProvider(_state.getRace());
-    const ActionType & depot = ActionTypes::GetResourceDepot(_state.getRace());
-
-    UnitCountType mineralWorkers = _state.getUnitData().getNumMineralWorkers();
-    UnitCountType numDepot = _state.getUnitData().getNumTotal(depot);
-
-    if (mineralWorkers == 0 || numDepot == 0)
-    {
-        return true;
-    }
-
-    if (!_state.isLegal(worker) && !_state.isLegal(supply))
-    {
-        return true;
-    }
-
-    return false;
-}
-
 const BuildOrder & NaiveBuildOrderSearch::solve()
 {
     if (_naiveSolved)
@@ -39,15 +17,8 @@ const BuildOrder & NaiveBuildOrderSearch::solve()
         return _buildOrder;
     }
 
-    if (checkUnsolvable())
-    {
-        bool temp = checkUnsolvable();
-        _buildOrder = BuildOrder();
-        return _buildOrder;
-    }
-
     PrerequisiteSet wanted;
-    int minWorkers = 0;
+    int minWorkers = 12;
 
     const ActionType & worker = ActionTypes::GetWorker(_state.getRace());
 
@@ -178,16 +149,17 @@ const BuildOrder & NaiveBuildOrderSearch::solve()
     }
 
     // figure out how many workers are needed for the build order to be legal      
-    size_t workersNeeded = _goal.getGoal(worker);
+    size_t workersNeeded = 2 + _goal.getGoal(worker);
 
     // we need enough workers to fill all the refineries that will be built
-    size_t gasWorkersNeeded = 3*_state.getUnitData().getNumTotal(ActionTypes::GetRefinery(_state.getRace())) + 3*buildOrder.getTypeCount(ActionTypes::GetRefinery(_state.getRace()));
-
-    workersNeeded = std::max(workersNeeded, gasWorkersNeeded);
+    workersNeeded += 3*_state.getUnitData().getNumTotal(ActionTypes::GetRefinery(_state.getRace()));
+    workersNeeded += 3*buildOrder.getTypeCount(ActionTypes::GetRefinery(_state.getRace()));
 
     // special case for zerg: buildings consume drones
     if (_state.getRace() == Races::Zerg)
     {
+        workersNeeded += 3*buildOrder.getTypeCount(ActionTypes::GetRefinery(_state.getRace()));
+
         for (size_t i(0); i < ActionTypes::GetAllActionTypes(_state.getRace()).size(); ++i)
         {
             const ActionType & type = ActionTypes::GetActionType(Races::Zerg, i);
@@ -200,10 +172,7 @@ const BuildOrder & NaiveBuildOrderSearch::solve()
     }
 
     int workersToAdd = workersNeeded - _state.getUnitData().getNumTotal(worker) - buildOrder.getTypeCount(worker);
-    workersToAdd = std::max(0, workersToAdd);
-    
-    buildOrder.add(worker, workersToAdd);
-
+    buildOrder.add(worker, workersNeeded);
 
     // Check to see if we have enough buildings for the required addons
     if (_state.getRace() == Races::Terran)
@@ -257,7 +226,6 @@ const BuildOrder & NaiveBuildOrderSearch::solve()
         UnitCountType supplyInProgress = _state.getUnitData().getSupplyInProgress();
 
 		// insert 1 or more supply providers if needed
-        // TODO: don't go over 200 supply
 		while (!nextAction.isMorphed() && !nextAction.isSupplyProvider() && (nextAction.supplyRequired() > (maxSupply + supplyInProgress - currentSupply)))
 		{
 			BOSS_ASSERT(_state.isLegal(supplyProvider), "Should be able to build more supply here. Max: %d", maxSupply);
@@ -276,7 +244,6 @@ const BuildOrder & NaiveBuildOrderSearch::solve()
 
     _buildOrder = finalBuildOrder;
     _naiveSolved = true;
-
     return _buildOrder;
 }
 

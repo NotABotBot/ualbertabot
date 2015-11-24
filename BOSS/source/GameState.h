@@ -48,7 +48,7 @@ class GameState
     ResourceCountType           _minerals; 			        // current mineral count
     ResourceCountType           _gas;						// current gas count
 
-    std::vector<ActionPerformed>   _actionsPerformed;
+    Vec<ActionPerformed, 100>   _actionsPerformed;
 
     const FrameCountType        raceSpecificWhenReady(const ActionType & a) const;
     void                        fixZergUnitMasks();

@@ -4,55 +4,43 @@
 
 namespace UAlbertaBot
 {
-
-namespace BuildingStatus
-{
-    enum { Unassigned = 0, Assigned = 1, UnderConstruction = 2, Size = 3 };
-}
-
-class Building 
-{     
+class Building {
+     
 public:
       
-	BWAPI::TilePosition     desiredPosition;
-	BWAPI::TilePosition     finalPosition;
-	BWAPI::Position         position;
-	BWAPI::UnitType         type;
-	BWAPI::Unit             buildingUnit;
-	BWAPI::Unit             builderUnit;
-    size_t                  status;
-	int                     lastOrderFrame;
-    bool                    isGasSteal;
-	bool                    buildCommandGiven;
-	bool                    underConstruction;
+	BWAPI::TilePosition desiredPosition;
+	BWAPI::TilePosition finalPosition;
+	BWAPI::Position position;
+	BWAPI::UnitType type;
+	BWAPI::UnitInterface* buildingUnit;
+	BWAPI::UnitInterface* builderUnit;
+	int lastOrderFrame;
+	bool buildCommandGiven;
+	bool underConstruction;
 
 	Building() 
-		: desiredPosition   (0,0)
-        , finalPosition     (BWAPI::TilePositions::None)
-        , position          (0,0)
-        , type              (BWAPI::UnitTypes::Unknown)
-        , buildingUnit      (nullptr)
-        , builderUnit       (nullptr)
-        , lastOrderFrame    (0)
-        , status            (BuildingStatus::Unassigned)
-        , buildCommandGiven (false)
-        , underConstruction (false) 
-        , isGasSteal        (false)
+		: desiredPosition(0,0)
+        , finalPosition(BWAPI::TilePositions::None)
+        , position(0,0)
+        , type(BWAPI::UnitTypes::Unknown)
+        , buildingUnit(NULL)
+        , builderUnit(NULL)
+        , lastOrderFrame(0)
+        , buildCommandGiven(false)
+        , underConstruction(false) 
     {} 
 
 	// constructor we use most often
 	Building(BWAPI::UnitType t, BWAPI::TilePosition desired)
-		: desiredPosition   (desired)
-        , finalPosition     (0,0)
-        , position          (0,0)
-        , type              (t)
-        , buildingUnit      (nullptr)
-        , builderUnit       (nullptr)
-        , lastOrderFrame    (0)
-        , status            (BuildingStatus::Unassigned)
-        , buildCommandGiven (false)
-        , underConstruction (false) 
-        , isGasSteal        (false)
+		: desiredPosition(desired)
+        , finalPosition(0,0)
+        , position(0,0)
+        , type(t)
+        , buildingUnit(NULL)
+        , builderUnit(NULL)
+        , lastOrderFrame(0)
+        , buildCommandGiven(false)
+        , underConstruction(false) 
     {}
 
 	// equals operator
@@ -63,19 +51,32 @@ public:
 	}
 };
 
-class BuildingData 
+class ConstructionData 
 {
-    std::vector<Building>                   _buildings;
+public:
+
+	typedef enum BuildingState_t {Unassigned = 0, Assigned = 1, UnderConstruction = 2, NumBuildingStates = 3} BuildingState;
+
+private:
+
+	std::vector< size_t >						buildingIndex;
+	std::vector< std::vector<Building> >		buildings;			// buildings which do not yet have builders assigned
+
+	std::set<BWAPI::UnitInterface*>		buildingUnitsConstructing;		// units which have been recently detected as started construction
 
 public:
 
-	BuildingData();
+	ConstructionData();
 	
-    std::vector<Building> & getBuildings();
+	Building &					getNextBuilding(BuildingState bs);
+	bool						hasNextBuilding(BuildingState bs);
+	void						begin(BuildingState bs);
+	void						addBuilding(BuildingState bs, const Building & b);
+	void						removeCurrentBuilding(BuildingState bs);
+	void						removeBuilding(BuildingState bs, Building & b);
 
-	void        addBuilding(const Building & b);
-	void        removeBuilding(const Building & b);
-    void        removeBuildings(const std::vector<Building> & buildings);
-	bool        isBeingBuilt(BWAPI::UnitType type);
+	int							getNumBuildings(BuildingState bs);
+
+	bool						isBeingBuilt(BWAPI::UnitType type);
 };
 }

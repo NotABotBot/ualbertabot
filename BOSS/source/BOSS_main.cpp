@@ -32,7 +32,7 @@ const char * ResetExperiment(char * paramString)
     if (params.length() == 0)
     {
         #ifndef EMSCRIPTEN
-            experiments.loadExperimentsFromFile("../asset/config/config.txt");
+            experiments.loadExperimentsFromFile("../asset/config/webconfig.txt");
         #else
             experiments.loadExperimentsFromFile("asset/config/webconfig.txt");
         #endif
@@ -83,8 +83,8 @@ int main(int argc, char *argv[])
     
     //testBuildOrderPlot();
 
-    //doCombatExperiment();
-
+    doCombatExperiment();
+/*
     ResetExperiment("");
 
     if (experiments.getVisExperiments().size() > 0)
@@ -100,8 +100,8 @@ int main(int argc, char *argv[])
     }
 #else
     emscripten_set_main_loop(mainLoop,0,true);
-#endif
-    
+#endif*/
+
     return 0;
 }
 

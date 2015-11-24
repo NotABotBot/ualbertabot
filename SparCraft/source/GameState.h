@@ -19,11 +19,8 @@ class GameState
 {
     Map *                                                           _map;               
 
-    std::vector<Unit> _units[Constants::Num_Players];
-    std::vector<int>  _unitIndex[Constants::Num_Players];
-
-    Array2D<Unit, Constants::Num_Players, Constants::Max_Units>     _units2;             
-    Array2D<int, Constants::Num_Players, Constants::Max_Units>      _unitIndex2;        
+    Array2D<Unit, Constants::Num_Players, Constants::Max_Units>     _units;             
+    Array2D<int, Constants::Num_Players, Constants::Max_Units>      _unitIndex;        
     Array<Unit, 1>                                                  _neutralUnits;
 
     Array<UnitCountType, Constants::Num_Players>                    _numUnits;

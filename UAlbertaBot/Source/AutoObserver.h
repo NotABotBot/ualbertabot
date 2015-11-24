@@ -9,7 +9,7 @@ class AutoObserver
 {
     int                         _cameraLastMoved;
     int                         _unitFollowFrames;
-    BWAPI::Unit      _observerFollowingUnit;
+    BWAPI::UnitInterface *      _observerFollowingUnit;
 
 public:
 

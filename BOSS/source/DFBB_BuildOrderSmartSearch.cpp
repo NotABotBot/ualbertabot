@@ -34,6 +34,8 @@ void DFBB_BuildOrderSmartSearch::doSearch()
         _params.relevantActions             = _relevantActions;
         _params.searchTimeLimit             = _searchTimeLimit;
 
+        _params.print();
+
         //BWAPI::Broodwar->printf("Constructing new search object time limit is %lf", _params.searchTimeLimit);
         _stackSearch = DFBB_BuildOrderStackSearch(_params);
         _stackSearch.search();
@@ -43,8 +45,8 @@ void DFBB_BuildOrderSmartSearch::doSearch()
 
     if (_results.solved && !_results.solutionFound)
     {
-        //std::cout << "No solution found better than naive, using naive build order" << std::endl;
-        //_results.buildOrder = Tools::GetOptimizedNaiveBuildOrder(_params.initialState, _params.goal);
+        std::cout << "No solution found better than naive, using naive build order" << std::endl;
+        _results.buildOrder = Tools::GetOptimizedNaiveBuildOrder(_params.initialState, _params.goal);
     }
 }
 
@@ -66,7 +68,7 @@ void DFBB_BuildOrderSmartSearch::calculateSearchSettings()
 
     // set the number of supply providers required
     _goal.setGoalMax(supplyProvider, calculateSupplyProvidersRequired());
-        
+
     // set the maximums for all goal prerequisites
     setPrerequisiteGoalMax();
 
@@ -75,17 +77,6 @@ void DFBB_BuildOrderSmartSearch::calculateSearchSettings()
 
     // set the repetitions
     setRepetitions();
-
-    int maxWorkers = 45;
-    if (_goal.getGoal(worker) > maxWorkers)
-    {
-        _goal.setGoal(worker, maxWorkers);
-    }
-
-    if (_goal.getGoalMax(worker) > maxWorkers)
-    {
-        _goal.setGoalMax(worker, maxWorkers);
-    }
 }
 
 // calculates maximum number of refineries we'll need
@@ -121,8 +112,10 @@ void DFBB_BuildOrderSmartSearch::setPrerequisiteGoalMax()
     if (getRace() == Races::Protoss || getRace() == Races::Terran)
     {
         // for each unit in the goal vector
-        for (const auto & actionType : ActionTypes::GetAllActionTypes(getRace()))
+        for (size_t a(0); a < ActionTypes::GetAllActionTypes(getRace()).size(); ++a)
         {
+            const ActionType & actionType = ActionTypes::GetActionType(getRace(), a);
+
             // if we want one of these
             if (_goal.getGoal(actionType) > 0)
             {
@@ -148,7 +141,7 @@ void DFBB_BuildOrderSmartSearch::setPrerequisiteGoalMax()
             }
         }
 
-        UnitCountType additionalProductionBuildingLimit = 2;
+        UnitCountType productionBuildingLimit = 4;
 
         for (size_t a(0); a < numGoalUnitsBuiltBy.size(); ++a)
         {
@@ -161,21 +154,7 @@ void DFBB_BuildOrderSmartSearch::setPrerequisiteGoalMax()
                 if (numGoalUnitsBuiltBy[actionType.ID()] > 0)
                 {
                     // set the goal max to how many units
-                    _goal.setGoalMax(actionType, std::min(_initialState.getUnitData().getNumTotal(actionType) + additionalProductionBuildingLimit, (int)numGoalUnitsBuiltBy[actionType.ID()]));
-                }
-            }
-        }
-
-        // set the upper bound on addons to the upper bound on the building that makes them
-        for (const auto & actionType : ActionTypes::GetAllActionTypes(getRace()))
-        {
-            if (actionType.isAddon() && _goal.getGoalMax(actionType) > 0)
-            {
-                const ActionType & whatBuilds = actionType.whatBuildsActionType();
-
-                if (_goal.getGoalMax(whatBuilds) > 0)
-                {
-                    _goal.setGoalMax(actionType, _goal.getGoalMax(whatBuilds));
+                    _goal.setGoalMax(actionType, std::min(productionBuildingLimit, numGoalUnitsBuiltBy[actionType.ID()]));
                 }
             }
         }
@@ -220,12 +199,13 @@ void DFBB_BuildOrderSmartSearch::setRelevantActions()
     {
         const ActionType & actionType = ActionTypes::GetActionType(getRace(), a);
 
-        if (_goal.getGoalMax(actionType) > 0 || _goal.getGoal(actionType) > 0)
+        if (_goal.getGoalMax(actionType))
         {
             _relevantActions.add(actionType);
         }
     }
 }
+
 
 UnitCountType DFBB_BuildOrderSmartSearch::calculateSupplyProvidersRequired()
 {
@@ -334,5 +314,6 @@ const DFBB_BuildOrderSearchParameters & DFBB_BuildOrderSmartSearch::getParameter
 void DFBB_BuildOrderSmartSearch::print()
 {
     //initialState.printData();
+    _goal.printGoal();
     printf("\n\n");
 }

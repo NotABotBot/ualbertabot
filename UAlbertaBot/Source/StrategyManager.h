@@ -9,66 +9,67 @@
 
 namespace UAlbertaBot
 {
+
+typedef std::pair<int, int> IntPair;
 typedef std::pair<MetaType, size_t> MetaPair;
 typedef std::vector<MetaPair> MetaPairVector;
-
-struct Strategy
-{
-    std::string _name;
-    BWAPI::Race _race;
-    int         _wins;
-    int         _losses;
-    BuildOrder  _buildOrder;
-
-    Strategy()
-        : _name("None")
-        , _race(BWAPI::Races::None)
-        , _wins(0)
-        , _losses(0)
-    {
-    
-    }
-
-    Strategy(const std::string & name, const BWAPI::Race & race, const BuildOrder & buildOrder)
-        : _name(name)
-        , _race(race)
-        , _wins(0)
-        , _losses(0)
-        , _buildOrder(buildOrder)
-    {
-    
-    }
-};
 
 class StrategyManager 
 {
 	StrategyManager();
+	~StrategyManager() {}
 
-	BWAPI::Race					    _selfRace;
-	BWAPI::Race					    _enemyRace;
-    std::map<std::string, Strategy> _strategies;
-    int                             _totalGamesPlayed;
-    const BuildOrder                _emptyBuildOrder;
+	BWAPI::Race					        _selfRace;
+	BWAPI::Race					        _enemyRace;
+    std::map<std::string, BuildOrder>   _openingBuildOrders;
+    BuildOrder                          _emptyBuildOrder;
 
-	        void	                writeResults();
-	const	int					    getScore(BWAPI::Player player) const;
-	const	double				    getUCBValue(const size_t & strategy) const;
-	const	bool				    shouldExpandNow() const;
-    const	MetaPairVector		    getProtossBuildOrderGoal() const;
-	const	MetaPairVector		    getTerranBuildOrderGoal() const;
-	const	MetaPairVector		    getZergBuildOrderGoal() const;
+    std::map<std::string, std::pair<int, int>> _results;
+
+	bool						firstAttackSent;
+
+	void	setStrategy();
+	void	readResults();
+	void	writeResults();
+
+	const	int					getScore(BWAPI::PlayerInterface * player) const;
+	const	double				getUCBValue(const size_t & strategy) const;
+	
+	// strategy functions, add your own here
+	const	bool				expandProtossZealotRush() const;
+	const	std::string			getProtossZealotRushOpeningBook() const;
+	const	MetaPairVector		getProtossZealotRushBuildOrderGoal() const;
+
+	const	bool				expandProtossDarkTemplar() const;
+	const	std::string			getProtossDarkTemplarOpeningBook() const;
+	const	MetaPairVector		getProtossDarkTemplarBuildOrderGoal() const;
+
+	const	bool				expandProtossDragoons() const;
+	const	std::string			getProtossDragoonsOpeningBook() const;
+	const	MetaPairVector		getProtossDragoonsBuildOrderGoal() const;
+	const   MetaPairVector      getRandyBuildOrderGoal() const;
+
+	const	MetaPairVector		getTerranBuildOrderGoal() const;
+	const	MetaPairVector		getZergBuildOrderGoal() const;
+
+	const	MetaPairVector		getProtossOpeningBook() const;
+	const	MetaPairVector		getTerranOpeningBook() const;
+	const	MetaPairVector		getZergOpeningBook() const;
 
 public:
     
 	static	StrategyManager &	    Instance();
 
 			void				    onEnd(const bool isWinner);
-            void                    addStrategy(const std::string & name, Strategy & strategy);
-            void                    setLearnedStrategy();
-            void	                readResults();
+            void                    addOpeningBuildOrder(const std::string & name, BuildOrder & buildOrder);
+	
 	const	bool				    regroup(int numInRadius);
-	const	bool				    rushDetected();
+	const	bool				    doAttack(const std::set<BWAPI::UnitInterface*> & freeUnits);
 	const	int				        defendWithWorkers();
+	const	bool				    rushDetected();
+
+	const	int					    getCurrentStrategy();
+
 	const	MetaPairVector		    getBuildOrderGoal();
 	const	BuildOrder &            getOpeningBookBuildOrder() const;
 };

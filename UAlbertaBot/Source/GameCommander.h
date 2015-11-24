@@ -19,10 +19,10 @@ class UnitToAssign
 {
 public:
 
-	BWAPI::Unit unit;
+	BWAPI::UnitInterface* unit;
 	bool isAssigned;
 
-	UnitToAssign(BWAPI::Unit u)
+	UnitToAssign(BWAPI::UnitInterface* u)
 	{
 		unit = u;
 		isAssigned = false;
@@ -31,17 +31,22 @@ public:
 
 class GameCommander 
 {
-	CombatCommander		    _combatCommander;
-	TimerManager		    _timerManager;
+	CombatCommander		combatCommander;
 
-	BWAPI::Unitset          _validUnits;
-	BWAPI::Unitset          _combatUnits;
-	BWAPI::Unitset          _scoutUnits;
+	ScoutManager		scoutManager;
+	TimerManager		timerManager;
 
-    bool                    _initialScoutSet;
+	std::set<BWAPI::UnitInterface*> combatUnits;
+	std::set<BWAPI::UnitInterface*> scoutUnits;
+	std::set<BWAPI::UnitInterface*> workerUnits;
 
-    void                    assignUnit(BWAPI::Unit unit, BWAPI::Unitset & set);
-	bool                    isAssigned(BWAPI::Unit unit) const;
+	std::set<BWAPI::UnitInterface*>	validUnits;
+	std::set<BWAPI::UnitInterface*> assignedUnits;
+
+	BWAPI::UnitInterface* currentScout;
+	int numWorkerScouts;
+
+	const bool isAssigned(BWAPI::UnitInterface* unit) const;
 
 public:
 
@@ -50,25 +55,28 @@ public:
 
 	void update();
 
-	void handleUnitAssignments();
+	void populateUnitVectors();
 	void setValidUnits();
 	void setScoutUnits();
+	void setWorkerUnits();
 	void setCombatUnits();
 
 	void drawDebugInterface();
-    void drawGameInformation(int x, int y);
 
-	BWAPI::Unit getFirstSupplyProvider();
-	BWAPI::Unit getClosestUnitToTarget(BWAPI::UnitType type, BWAPI::Position target);
-	BWAPI::Unit getClosestWorkerToTarget(BWAPI::Position target);
+	bool isValidUnit(BWAPI::UnitInterface* unit);
+	bool isCombatUnit(BWAPI::UnitInterface* unit) const;
 
-	void onUnitShow(BWAPI::Unit unit);
-	void onUnitHide(BWAPI::Unit unit);
-	void onUnitCreate(BWAPI::Unit unit);
-	void onUnitComplete(BWAPI::Unit unit);
-	void onUnitRenegade(BWAPI::Unit unit);
-	void onUnitDestroy(BWAPI::Unit unit);
-	void onUnitMorph(BWAPI::Unit unit);
+	BWAPI::UnitInterface* getFirstSupplyProvider();
+	BWAPI::UnitInterface* getClosestUnitToTarget(BWAPI::UnitType type, BWAPI::Position target);
+	BWAPI::UnitInterface* getClosestWorkerToTarget(BWAPI::Position target);
+
+	void onUnitShow(BWAPI::UnitInterface* unit);
+	void onUnitHide(BWAPI::UnitInterface* unit);
+	void onUnitCreate(BWAPI::UnitInterface* unit);
+	void onUnitComplete(BWAPI::UnitInterface* unit);
+	void onUnitRenegade(BWAPI::UnitInterface* unit);
+	void onUnitDestroy(BWAPI::UnitInterface* unit);
+	void onUnitMorph(BWAPI::UnitInterface* unit);
 };
 
 }

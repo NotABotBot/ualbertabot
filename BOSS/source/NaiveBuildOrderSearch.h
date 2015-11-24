@@ -17,8 +17,6 @@ class NaiveBuildOrderSearch
 
     bool                        _naiveSolved;
 
-    bool                        checkUnsolvable();
-
 public:
 
     NaiveBuildOrderSearch(const GameState & state, const BuildOrderSearchGoal & goal);

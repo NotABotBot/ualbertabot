@@ -3,13 +3,6 @@
 
 namespace Config
 {
-    namespace ConfigFile
-    {
-        bool ConfigFileFound                = false;
-        bool ConfigFileParsed               = false;
-        std::string ConfigFileLocation      = "bwapi-data/AI/UAlbertaBot_Config.txt";
-    }
-
     namespace Strategy
     {
         std::string ProtossStrategyName     = "Protoss_ZealotRush";
@@ -18,10 +11,6 @@ namespace Config
         std::string StrategyName            = "Protoss_ZealotRush";
         std::string ReadDir                 = "bwapi-data/read/";
         std::string WriteDir                = "bwapi-data/write/";
-        bool GasStealWithScout              = false;
-        bool ScoutHarassEnemy               = true;
-        bool UseEnemySpecificStrategy       = false;
-        bool FoundEnemySpecificStrategy     = false;
     }
 
     namespace Modules							    
@@ -61,11 +50,10 @@ namespace Config
     
     namespace Debug								
     {
-        bool DrawGameInfo                   = true;
+        bool PrintModuleTimeout             = true;	
+        bool DrawBuildOrderSearchInfo       = true;
         bool DrawUnitHealthBars             = true;
         bool DrawProductionInfo             = true;
-        bool DrawBuildOrderSearchInfo       = false;
-        bool DrawScoutInfo                  = false;
         bool DrawResourceInfo               = false;
         bool DrawWorkerInfo                 = false;
         bool DrawModuleTimers               = false;
@@ -78,11 +66,9 @@ namespace Config
         bool DrawMapGrid                    = false;
         bool DrawUnitTargetInfo             = false;
         bool DrawSquadInfo                  = false;
-        bool DrawBOSSStateInfo              = false;
-        bool PrintModuleTimeout             = false;	
+        bool AllDebugOff                    = false;
 
         std::string ErrorLogFilename        = "UAB_ErrorLog.txt";
-        bool LogAssertToErrorFile           = false;
 
         BWAPI::Color ColorLineTarget        = BWAPI::Colors::White;
         BWAPI::Color ColorLineMineral       = BWAPI::Colors::Cyan;
@@ -93,11 +79,9 @@ namespace Config
     namespace Micro								
     {
         bool UseSparcraftSimulation         = true;
-        bool KiteWithRangedUnits            = true;
-        std::set<BWAPI::UnitType> KiteLongerRangedUnits;
-        bool WorkersDefendRush              = false; 
-		int RetreatMeleeUnitShields         = 0;
-        int RetreatMeleeUnitHP              = 0;
+        bool WorkerDefense                  = true;     // whether or not we defend with workers when combat units die
+        int WorkerDefensePerUnit            = 2;        // how many workers to assign to each unit attacking us
+		
         int CombatRadius                    = 1000;     // radius of combat to consider units for Micro Search
         int CombatRegroupRadius             = 300;      // radius of units around frontmost unit we consider in regroup calculation
         int UnitNearEnemyRadius             = 600;      // radius to consider a unit 'near' to an enemy unit
@@ -105,8 +89,6 @@ namespace Config
 
     namespace Macro
     {
-        int BOSSFrameLimit                  = 160;
-        int WorkersPerRefinery              = 3;
         int BuildingSpacing                 = 1;
         int PylonSpacing                    = 3;
     }

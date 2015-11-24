@@ -17,21 +17,24 @@ namespace UAlbertaBot
 {
 class CombatSimulation
 {
+
 	SparCraft::GameState		state;
+	bool						hasLogged;
 
 public:
 
 	CombatSimulation();
 
 	void setCombatUnits(const BWAPI::Position & center, const int radius);
+    bool checkZealotVsZergling(const BWAPI::Position & center, const int radius);
 
 	SparCraft::ScoreType simulateCombat();
 
 	const SparCraft::Unit			getSparCraftUnit(const UnitInfo & ui) const;
-    const SparCraft::Unit			getSparCraftUnit(BWAPI::Unit unit) const;
+    const SparCraft::Unit			getSparCraftUnit(BWAPI::UnitInterface* unit) const;
 	const SparCraft::GameState &	getSparCraftState() const;
 
-	const SparCraft::IDType getSparCraftPlayerID(BWAPI::Player player) const;
+	const SparCraft::IDType getSparCraftPlayerID(BWAPI::PlayerInterface * player) const;
 
 	void logState(const SparCraft::GameState & state);
 };
