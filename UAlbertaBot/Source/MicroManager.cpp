@@ -178,8 +178,15 @@ void MicroManager::smartAttackUnit(BWAPI::UnitInterface* attacker, BWAPI::UnitIn
 		return;
 	}
 
-	// if nothing prevents it, attack the target
-	attacker->attack(target);
+	if (attacker->canAttack() == false){
+		if (target->getType().isBuilding() == false && target->getEnergy() <= 75 && target->isUnderStorm() == false())
+			attacker->useTech(BWAPI::TechTypes::Psionic_Storm, target->getPosition());
+		else if (target->getEnergy() <= 50){}
+		//add to a group and have them morph
+	}
+	else{
+		attacker->attack(target);
+	}
 
 	if (Config::Debug::DrawUnitTargetInfo) BWAPI::Broodwar->drawLineMap(	attacker->getPosition().x, attacker->getPosition().y,
 									target->getPosition().x, target->getPosition().y,

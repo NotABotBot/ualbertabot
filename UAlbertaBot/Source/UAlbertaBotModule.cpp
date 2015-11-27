@@ -28,7 +28,7 @@ void UAlbertaBotModule::onStart()
     // Parse the bot's configuration file if it has one, change this file path to where your config file is
     // Any relative path name will be relative to Starcraft installation folder
     //parseConfigFile("C:/Users/Kitten/Desktop/Workspace/ualbertabot/UAlbertaBot/RandyBot_Config.txt");
-	parseConfigFile("RandyBot_Config.txt");
+	parseConfigFile("Maciejasdaf_Config.txt");
 
 	
     // Set our BWAPI options here    
@@ -38,7 +38,7 @@ void UAlbertaBotModule::onStart()
     if (Config::BWAPIOptions::EnableCompleteMapInformation)
     {
         BWAPI::Broodwar->enableFlag(BWAPI::Flag::CompleteMapInformation);
-    }
+    } 
 
     if (Config::BWAPIOptions::EnableUserInput)
     {
@@ -48,7 +48,7 @@ void UAlbertaBotModule::onStart()
     if (Config::BotInfo::PrintInfoOnStart)
     {
         BWAPI::Broodwar->printf("Hello! I am %s, written by %s", Config::BotInfo::BotName.c_str(), Config::BotInfo::Authors.c_str());
-    }
+    } 
 
     // Call BWTA to read and analyze the current map
     if (Config::Modules::UsingGameCommander)
@@ -286,7 +286,7 @@ void UAlbertaBotModule::onFrame()
 
     if (Config::Modules::UsingAutoObserver)
     {
-        _autoObserver.onFrame();
+       // _autoObserver.onFrame();
     }
 }
 
