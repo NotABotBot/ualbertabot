@@ -170,9 +170,9 @@ const MetaPairVector StrategyManager::getBuildOrderGoal()
 	{
 		return getProtossDragoonsBuildOrderGoal();
 	}
-	else if (Config::Strategy::StrategyName == "Randy")
+	else if (Config::Strategy::StrategyName == "NotABot")
 	{
-		return getRandyBuildOrderGoal();
+		return getNotABotBuildOrderGoal();
 	}
     else if (Config::Strategy::StrategyName == "Terran_MarineRush")
 	{
@@ -190,6 +190,96 @@ const MetaPairVector StrategyManager::getBuildOrderGoal()
     return MetaPairVector();
 }
 
+const MetaPairVector StrategyManager::getNotABotBuildOrderGoal() const
+{
+	{
+		// the goal to return
+		MetaPairVector goal;
+
+		int numDragoons = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Dragoon);
+		int numProbes = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Probe);
+		int numNexusCompleted = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Nexus);
+		int numNexusAll = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Nexus);
+		int numCyber = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Cybernetics_Core);
+		int numCannon = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Photon_Cannon);
+		int numHT = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_High_Templar);
+
+		int d_wanted = 3;
+
+
+		if (numDragoons > 2){
+			goal.push_back(MetaPair(BWAPI::UpgradeTypes::Singularity_Charge, 1));
+		}
+
+
+		if (numDragoons > 6){
+			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Citadel_of_Adun, 1));
+		}
+
+		if (numDragoons > 10){
+			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Templar_Archives, 1));
+		}
+
+		if (numDragoons > 14) {
+			goal.push_back(MetaPair(BWAPI::TechTypes::Psionic_Storm, 1));
+			if (numHT <= 6){
+				goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_High_Templar, 2));
+			}
+		}
+
+		if (numDragoons > 8){
+			d_wanted = 4;
+		}
+
+		int dragoonsWanted = numDragoons > 0 ? numDragoons + d_wanted : 2;
+
+
+		if (BWAPI::Broodwar->self()->minerals() > 800){
+			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Zealot, BWAPI::Broodwar->self()->minerals()/3 ));
+		}
+
+
+
+
+		if (InformationManager::Instance().enemyHasCloakedUnits())
+		{
+			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Robotics_Facility, 1));
+
+			if (BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Robotics_Facility) > 0)
+			{
+				goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observatory, 1));
+			}
+			if (BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Observatory) > 0)
+			{
+				goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observer, 1));
+			}
+		}
+		else
+		{
+			if (BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Robotics_Facility) > 0)
+			{
+				goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observatory, 1));
+			}
+
+			if (BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Observatory) > 0)
+			{
+				goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Observer, 1));
+			}
+		}
+
+		if (expandProtossZealotRush())
+		{
+			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Nexus, numNexusAll + 1));
+		}
+
+		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dragoon, dragoonsWanted));		
+
+		return goal;
+	}
+}
+
+
+
 const MetaPairVector StrategyManager::getRandyBuildOrderGoal() const
 {
 	{
@@ -206,7 +296,8 @@ const MetaPairVector StrategyManager::getRandyBuildOrderGoal() const
 		int amount_wanted = 3;
 		if (numDragoons > 12){
 			amount_wanted = 4;
-		} else if (numDragoons > 16){
+		}
+		else if (numDragoons > 16){
 			amount_wanted = 6;
 		}
 		else if (numDragoons > 24){
@@ -217,7 +308,7 @@ const MetaPairVector StrategyManager::getRandyBuildOrderGoal() const
 		int pylonsWanted = 0;
 		if (BWAPI::Broodwar->self()->supplyUsed() + 8 >= BWAPI::Broodwar->self()->supplyTotal())
 		{
-			pylonsWanted = dragoonsWanted/4 + 1;
+			pylonsWanted = dragoonsWanted / 4 + 1;
 		}
 
 		if (numDragoons > 8){
@@ -262,6 +353,12 @@ const MetaPairVector StrategyManager::getRandyBuildOrderGoal() const
 		return goal;
 	}
 }
+
+
+
+
+
+
 
 
 const MetaPairVector StrategyManager::getProtossDragoonsBuildOrderGoal() const
@@ -460,8 +557,9 @@ const MetaPairVector StrategyManager::getZergBuildOrderGoal() const
 
 	int mutasWanted = numMutas + 6;
 	int hydrasWanted = numHydras + 6;
+	int zerglingsWanted = zerglings + 6;
 
-	goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Mutalisk, numMutas + 6));
+	goal.push_back(std::pair<MetaType, int>(BWAPI::UnitTypes::Zerg_Zergling, zerglingsWanted));
 
 	return (const std::vector<MetaPair>)goal;
 }

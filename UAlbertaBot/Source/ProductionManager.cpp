@@ -128,6 +128,7 @@ void ProductionManager::update()
 		BWAPI::Broodwar->printf("Supply deadlock detected, building supply!");
 
 		queue.queueAsHighestPriority(MetaType(BWAPI::Broodwar->self()->getRace().getSupplyProvider()), true);
+		BWAPI::Broodwar->printf("I should've made supply here??");
 	}
 
 	// if they have cloaked units get a new goal asap
@@ -471,6 +472,7 @@ bool ProductionManager::detectBuildOrderDeadlock()
 	//BuildingManager::Instance().isBeingBuilt(BWAPI::Broodwar->self()->getRace().getCenter()) || 
 	//BWAPI::Broodwar->printf("%d", supplyInProgress);
 
+	//----------------------------------------------------------------------------------------------------------
 	// Randy: incase there is a deadlock anyways, we also have a long time check, could be tuned to be better
     // but should suffice because it should only deadlock when a probe trying to kill a pylon happens to die, which
 	// tends to be rare.
@@ -481,10 +483,11 @@ bool ProductionManager::detectBuildOrderDeadlock()
 		time_check = 0;
 	}
 
-	if (time_check > 200) {
+	if (time_check > 100) {
 		time_check = 0;
 		return true;
 	}
+	//----------------------------------------------------------------------------------------------------------
 
 
     for (BWAPI::UnitInterface * unit : BWAPI::Broodwar->self()->getUnits())

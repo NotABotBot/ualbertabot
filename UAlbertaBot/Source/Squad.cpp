@@ -274,6 +274,7 @@ BWAPI::Position Squad::calcRegroupPosition()
 	}
 
 
+	//----------------------------------------------------------------------------------------------------------
 
 	// Randy: attempt to rally on cannon location, naively hope that by giving cannon location perhaps
 	// units will just stand near it without going crazy
@@ -288,6 +289,8 @@ BWAPI::Position Squad::calcRegroupPosition()
 			}
 		}
 	}
+	//----------------------------------------------------------------------------------------------------------
+
 
 	// this checks if we have no rally, keep this incase we have no alive cannons
 	if (regroup == BWAPI::Position(0,0))
