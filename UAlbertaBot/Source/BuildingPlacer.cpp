@@ -198,7 +198,25 @@ BWAPI::TilePosition BuildingPlacer::GetBuildLocation(const Building & b, int pad
 BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int buildDist, bool horizontalOnly) const
 {
     SparCraft::Timer t;
-    t.start();
+	t.start();
+
+	BWTA::BaseLocation *home = BWTA::getStartLocation(BWAPI::Broodwar->self());
+	BWAPI::Position choke = BWTA::getNearestChokepoint(home->getTilePosition())->getCenter();
+	BWAPI::TilePosition chokeTile(choke);
+
+	int homex = home->getTilePosition().x;
+	int homey = home->getTilePosition().y;
+	int midx = (chokeTile.x + homex) / 2;
+	int midy = (chokeTile.y + homey) / 2;
+	static int px;
+	static int py;
+	//BWAPI::Broodwar->printf("Choke: %i, %i", chokeTile.x, chokeTile.y);
+	//BWAPI::Broodwar->printf("Mid: %i, %i", midx, midy);
+
+	// 1 if choke farther right, -1 if farther left
+	int ix = chokeTile.x > midx ? 1 : -1;
+	// 1 if choke farther south, -1 if farther north
+	int iy = chokeTile.y < midy ? -1 : 1;
 
     // get the precomputed vector of tile positions which are sorted closes to this location
     const std::vector<BWAPI::TilePosition> & closestToBuilding = MapTools::Instance().getClosestTilesTo(BWAPI::Position(b.desiredPosition));
@@ -212,20 +230,96 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
         return BWAPI::TilePositions::None;
     }
 
-    // iterate through the list until we've found a suitable location
-    for (size_t i(0); i < closestToBuilding.size(); ++i)
-    {
-        if (canBuildHereWithSpace(closestToBuilding[i], b, buildDist, horizontalOnly))
-        {
-            double ms = t.getElapsedTimeInMilliSec();
-            //BWAPI::Broodwar->printf("Building Placer Took %d iterations, lasting %lf ms @ %lf iterations/ms, %lf setup ms", i, ms, (i / ms), ms1);
+	// Brandons Code
+	if (b.type == BWAPI::UnitTypes::Protoss_Pylon && numPylons == 0) {
+		for (int i = midx; i != chokeTile.x; i += ix) {
+			for (int j = midy; j != chokeTile.y; j += iy) {
+				BWAPI::TilePosition pos(i, j);
+				if (canBuildHere(pos, b)) {
+					px = i;
+					py = j;
+					return pos;
+				}
+			}
+		}
+		for (int i = midx; i != homex; i -= ix) {
+			for (int j = midy; j != homey; j -= iy) {
+				BWAPI::TilePosition pos(i, j);
+				if (canBuildHere(pos, b)) {
+					return pos;
+				}
+			}
+		}
+	}
+	else if (b.type == BWAPI::UnitTypes::Protoss_Forge) {
+		for (int j = midy; j != chokeTile.y; j += iy) {
+			for (int i = midx; i != chokeTile.x; i += ix) {
+				BWAPI::TilePosition pos(i, j);
+				if (canBuildHere(pos, b)) {
+					px = i;
+					py = j;
+					return pos;
+				}
+			}
+		}
+		for (int i = chokeTile.x; i != midx; i -= ix) {
+			for (int j = chokeTile.y; j != midy; j -= iy) {
+				BWAPI::TilePosition pos(i, j);
+				if (canBuildHere(pos, b)) {
+					return pos;
+				}
+			}
+		}
+	}
+	//else if (b.type == BWAPI::UnitTypes::Protoss_Gateway) {
+	//	for (int i = homex; i != chokeTile.x; i += ix) {
+	//		for (int j = homey; j != chokeTile.y; j += iy) {
+	//			BWAPI::TilePosition pos(i, j);
+	//			if (canBuildHereWithSpace(pos, b, 1, horizontalOnly)) {
+	//				return pos;
+	//			}
+	//		}
+	//	}
+	//}
+	//else if (b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon) {
+	//	for (int i = homex; i != chokeTile.x; i += ix) {
+	//		for (int j = homey; j != chokeTile.y; j += iy) {
+	//			BWAPI::TilePosition pos(i, j);
+	//			if (canBuildHere(pos, b)) {
+	//				return pos;
+	//			}
+	//		}
+	//	}
+	//	for (int i = midx; i != homex; i -= ix) {
+	//		for (int j = midy; j != homey; j -= iy) {
+	//			BWAPI::TilePosition pos(i, j);
+	//			if (canBuildHere(pos, b)) {
+	//				return pos;
+	//			}
+	//		}
+	//	}
 
-            return closestToBuilding[i];
-        }
-    }
+	//}
 
-    double ms = t.getElapsedTimeInMilliSec();
-    //BWAPI::Broodwar->printf("Building Placer Took %lf ms", ms);
+	// iterate through the list until we've found a suitable location
+	for (size_t i(0); i < closestToBuilding.size(); ++i)
+	{
+		if (b.type == BWAPI::UnitTypes::Protoss_Gateway) {
+			buildDist = 1;
+		}
+		if (canBuildHereWithSpace(closestToBuilding[i], b, buildDist, horizontalOnly))
+		//if (canBuildHere(closestToBuilding[i], b))
+		{
+			double ms = t.getElapsedTimeInMilliSec();
+			//BWAPI::Broodwar->printf("Building Placer Took %d iterations, lasting %lf ms @ %lf iterations/ms, %lf setup ms", i, ms, (i / ms), ms1);
+
+			return closestToBuilding[i];
+		}
+	}
+
+	double ms = t.getElapsedTimeInMilliSec();
+	//BWAPI::Broodwar->printf("Building Placer Took %lf ms", ms);
+	
 
 	return  BWAPI::TilePositions::None;
 }
