@@ -29,17 +29,28 @@ void MeleeManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & targ
 		// if the order is to attack or defend
 		if (order.type == order.Attack || order.type == order.Defend) {
 
-			// run away if we meet the retreat critereon
-			if (meleeUnitShouldRetreat(meleeUnit)){
+			// run away if we have low hp or no shields
+			if ((meleeUnitStepOff(meleeUnit))&&(order.type==order.Attack)){
 
-				BWAPI::Broodwar->drawTextScreen(200, 150, "STEP OFF");
-				BWAPI::Position fleeTo(BWAPI::Broodwar->self()->getStartLocation());
+				/*
+				* Sabrina: Code to determine where the low hp/ no shield zealots should go.
+				* Currently trying to move back towards other melee units.
+				*/
 
-				MicroManager::smartMove(meleeUnit, fleeTo);
+				BWAPI::Position accum(0, 0);
+				for (BWAPI::UnitInterface* meleeUnit2 : meleeUnits)
+				{
+					accum += meleeUnit2->getPosition();
+				}
+				BWAPI::Position stepTo(accum.x / meleeUnits.size(), accum.y / meleeUnits.size());
+				//Previously fled to: BWAPI::Position fleeTo(BWAPI::Broodwar->self()->getStartLocation());
+
+				// Then we move
+				MicroManager::smartMove(meleeUnit, stepTo);
 			}
 
 			// if there are targets
-			if (!meleeUnitTargets.empty())
+			else if (!meleeUnitTargets.empty())
 			{
 				// find the best target for this meleeUnit
 				BWAPI::UnitInterface* target = getTarget(meleeUnit, meleeUnitTargets);
@@ -162,9 +173,20 @@ BWAPI::UnitInterface* MeleeManager::closestMeleeUnit(BWAPI::UnitInterface* targe
 	return closest;
 }
 
-bool MeleeManager::meleeUnitShouldRetreat(BWAPI::Unit meleeUnit){
 
-	if (meleeUnit->getShields() == 0 || meleeUnit->getHitPoints() < 10){
-		return false;}
+/*
+*  Sabrina: This is the small function that checks if our meleeUnit has low hp or 
+*  no shields. If it does have either of this situations it should step back and the function
+*  returns true. 
+*/
+bool MeleeManager::meleeUnitStepOff(BWAPI::Unit meleeUnit){
 
-	return true;}
+	if (meleeUnit->getShields() == 0){
+		//BWAPI::Broodwar->printf("Shields down");
+		return true;}
+
+	else if (meleeUnit->getHitPoints() < 10){
+		//BWAPI::Broodwar->printf("Low health");
+		return true;}
+
+	return false;}
