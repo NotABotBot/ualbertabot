@@ -234,18 +234,13 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
     }
 
 	// Brandons Code
-	if (b.type == BWAPI::UnitTypes::Protoss_Pylon && numPylons % 2 == 0) {
-		//int x = px;
-		//int y = py;
-		//if (numPylons == 0) {
+	if (b.type == BWAPI::UnitTypes::Protoss_Pylon && numPylons == 0) {
 		int x = (chokeTile.x + midx) / 2;
 		int y = (chokeTile.y + midy) / 2;
-		//}
-
 		int limit = 1500;
 		while (limit > 0) {
 			BWAPI::TilePosition pos(x, y);
-			if (canBuildHere(pos, b)) {
+			if (canBuildHereWithSpace(pos, b, buildDist, false)) {
 				px = x;
 				py = y;
 				return pos;
@@ -255,43 +250,47 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
 			limit--;
 		}
 	}
-	else if (b.type == BWAPI::UnitTypes::Protoss_Forge || (b.type == BWAPI::UnitTypes::Protoss_Gateway && numGate < 1) || b.type == BWAPI::UnitTypes::Protoss_Cybernetics_Core) {
-		int x = (chokeTile.x + midx) / 2;
-		int y = (chokeTile.y + midy) / 2;
-		int limit = 1500;
-		while (limit > 0) {
-			BWAPI::TilePosition pos(x, y);
-			if (canBuildHere(pos, b)) {
-				return pos;
-			}
-			x += ix;
-			BWAPI::TilePosition pos2(x, y);
-			if (canBuildHere(pos2, b)) {
-				return pos2;
-			}
-			y += iy;
-			BWAPI::TilePosition pos3(x, y);
-			if (canBuildHere(pos3, b)) {
-				return pos3;
-			}
-			
-			limit--;
-		}
-	}
-	else if (b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon) {
-		int x = px;
-		int y = py;
-		int limit = 1500;
-		while (limit > 0) {
-			BWAPI::TilePosition pos(x, y);
-			if (canBuildHere(pos, b)) {
-				return pos;
-			}
-			x -= ix;
-			y -= iy;
-			limit--;
-		}
-	}
+	//else if (b.type == BWAPI::UnitTypes::Protoss_Forge || b.type == BWAPI::UnitTypes::Protoss_Gateway  && numGate == 0 ) {
+	//	//int x = (chokeTile.x + midx) / 2;
+	//	//int y = (chokeTile.y + midy) / 2;
+	//	int x = px;
+	//	int y = py;
+	//	int limit = 1500;
+	//	while (limit > 0) {
+	//		BWAPI::TilePosition pos(x, y);
+	//		if (canBuildHere(pos, b)) {
+	//			return pos;
+	//		}
+	//		x += ix;
+	//		//BWAPI::TilePosition pos2(x, y);
+	//		//if (canBuildHere(pos2, b)) {
+	//		//	return pos2;
+	//		//}
+	//		y += iy;
+	//		//BWAPI::TilePosition pos3(x, y);
+	//		//if (canBuildHere(pos3, b)) {
+	//		//	return pos3;
+	//		//}
+	//		
+	//		limit--;
+	//	}
+	//}
+	//else if (b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon) {
+	//	int x = (chokeTile.x + midx) / 2;
+	//	int y = (chokeTile.y + midy) / 2;
+	//	//int x = px;
+	//	//int y = py;
+	//	int limit = 1500;
+	//	while (limit > 0) {
+	//		BWAPI::TilePosition pos(x, y);
+	//		if (canBuildHere(pos, b)) {
+	//			return pos;
+	//		}
+	//		x -= ix;
+	//		y -= iy;
+	//		limit--;
+	//	}
+	//}
 
 	
 
