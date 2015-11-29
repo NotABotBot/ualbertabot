@@ -162,8 +162,6 @@ bool MicroManager::checkPositionWalkable(BWAPI::Position pos) {
 void MicroManager::smartAttackUnit(BWAPI::UnitInterface* attacker, BWAPI::UnitInterface* target) const
 {
 	assert(attacker && target);
-	BWAPI::UnitInterface* nearestTemplar = NULL;
-	int collateralDamage = 0;
 	// if we have issued a command to this unit already this frame, ignore this one
 	if (attacker->getLastCommandFrame() >= BWAPI::Broodwar->getFrameCount() || attacker->isAttackFrame())
 	{
@@ -181,49 +179,7 @@ void MicroManager::smartAttackUnit(BWAPI::UnitInterface* attacker, BWAPI::UnitIn
 
 	if (attacker != NULL && target != NULL){
 		if (attacker->getType() == BWAPI::UnitTypes::Protoss_High_Templar){
-			if (target->getType().isBuilding() == false && target->getType() != BWAPI::UnitTypes::Zerg_Egg && target->getType() != BWAPI::UnitTypes::Zerg_Larva){
-				if (target->isUnderStorm() == false){
-					if (attacker->getEnergy() >= 75){
-						BWAPI::Unitset stormedUnits = target->getUnitsInRadius(48);
-						for (BWAPI::UnitInterface* badGuys : stormedUnits)
-						{
-							if (badGuys->getPlayer() == BWAPI::Broodwar->enemy())
-							{
-								++collateralDamage;
-							}
-							if (badGuys->getPlayer() == BWAPI::Broodwar->self())
-							{
-								--collateralDamage;
-							}
-						}
-						if (collateralDamage > 2){
-							attacker->useTech(BWAPI::TechTypes::Psionic_Storm, target->getPosition());
-						}
-						collateralDamage = 0;
-					}
-					if (attacker->getEnergy() <= 50){
-						int maxDistance = 10000000;
-						for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
-						{
-							if (unit->getType() == BWAPI::UnitTypes::Protoss_High_Templar){
-								if (unit->BWAPI::UnitInterface::getDistance(attacker) < maxDistance && unit->getEnergy() <= 70){
-									if (nearestTemplar != NULL){
-										if (nearestTemplar != attacker){
-											nearestTemplar = unit;
-											maxDistance = nearestTemplar->getDistance(attacker);
-										}
-									}
-								}
-							}
-						}
-						if (nearestTemplar != NULL&&attacker != NULL&& attacker != nearestTemplar){
-							attacker->useTech(BWAPI::TechTypes::Archon_Warp, nearestTemplar);
-						}
-					}
-				}
-			}
-
-			//add to a group and have them morph
+			smartHighTemplarAttackUnit(attacker, target);
 		}
 		else{
 			if (attacker != NULL&&target != NULL){
@@ -237,7 +193,52 @@ void MicroManager::smartAttackUnit(BWAPI::UnitInterface* attacker, BWAPI::UnitIn
 		BWAPI::Colors::Red);
 
 }
-
+void MicroManager::smartHighTemplarAttackUnit(BWAPI::UnitInterface* attacker, BWAPI::UnitInterface* target) const
+{
+	BWAPI::UnitInterface* nearestTemplar = NULL;
+	int collateralDamage = 0;
+	if (target->getType().isBuilding() == false && target->getType() != BWAPI::UnitTypes::Zerg_Egg && target->getType() != BWAPI::UnitTypes::Zerg_Larva){
+		if (target->isUnderStorm() == false){
+			if (attacker->getEnergy() >= 75){
+				BWAPI::Unitset stormedUnits = target->getUnitsInRadius(48);
+				for (BWAPI::UnitInterface* badGuys : stormedUnits)
+				{
+					if (badGuys->getPlayer() == BWAPI::Broodwar->enemy())
+					{
+						collateralDamage += badGuys->getType().height()*badGuys->getType().width();
+					}
+					if (badGuys->getPlayer() == BWAPI::Broodwar->self())
+					{
+						collateralDamage -= badGuys->getType().height()*badGuys->getType().width();
+					}
+				}
+				if (collateralDamage >= 768){
+					attacker->useTech(BWAPI::TechTypes::Psionic_Storm, target->getPosition());
+				}
+				collateralDamage = 0;
+			}
+			if (attacker->getEnergy() <= 50){
+				int maxDistance = 10000000;
+				for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
+				{
+					if (unit->getType() == BWAPI::UnitTypes::Protoss_High_Templar){
+						if (unit->BWAPI::UnitInterface::getDistance(attacker) < maxDistance && unit->getEnergy() <= 70){
+							if (nearestTemplar != NULL){
+								if (nearestTemplar != attacker){
+									nearestTemplar = unit;
+									maxDistance = nearestTemplar->getDistance(attacker);
+								}
+							}
+						}
+					}
+				}
+				if (nearestTemplar != NULL&&attacker != NULL&& attacker != nearestTemplar){
+					attacker->useTech(BWAPI::TechTypes::Archon_Warp, nearestTemplar);
+				}
+			}
+		}
+	}
+}
 void MicroManager::smartAttackMove(BWAPI::UnitInterface* attacker, BWAPI::Position targetPosition) const
 {
 	assert(attacker);

@@ -33,6 +33,7 @@ protected:
 	bool				checkPositionWalkable(BWAPI::Position pos);
 	bool				drawDebugVectors;
 	void				drawOrderText();
+	void				smartHighTemplarAttackUnit(BWAPI::UnitInterface* attacker, BWAPI::UnitInterface* target) const;
 	void				smartAttackUnit(BWAPI::UnitInterface* attacker, BWAPI::UnitInterface* target) const;
 	void				smartAttackMove(BWAPI::UnitInterface* attacker, BWAPI::Position targetPosition) const;
 	void				smartMove(BWAPI::UnitInterface* attacker, BWAPI::Position targetPosition) const;
