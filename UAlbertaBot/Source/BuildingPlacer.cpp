@@ -209,9 +209,6 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
 	int midy = (chokeTile.y + homey) / 2;
 	static int px = midx;
 	static int py = midy;
-	static int change = 0;
-	//BWAPI::Broodwar->printf("Choke: %i, %i", chokeTile.x, chokeTile.y);
-	//BWAPI::Broodwar->printf("Mid: %i, %i", midx, midy);
 
 	// 1 if choke farther right, -1 if farther left
 	int ix = chokeTile.x > midx ? 1 : -1;
@@ -235,12 +232,14 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
 
 	// Brandons Code
 	if (b.type == BWAPI::UnitTypes::Protoss_Pylon && numPylons == 0) {
-		int x = (chokeTile.x + midx) / 2;
-		int y = (chokeTile.y + midy) / 2;
+		//int x = (chokeTile.x + midx) / 2;
+		int x = midx;
+		int y = midy;
+		//int y = (chokeTile.y + midy) / 2;
 		int limit = 1500;
 		while (limit > 0) {
 			BWAPI::TilePosition pos(x, y);
-			if (canBuildHereWithSpace(pos, b, buildDist, false)) {
+			if (canBuildHere(pos, b)) {
 				px = x;
 				py = y;
 				return pos;
