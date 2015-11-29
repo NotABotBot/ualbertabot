@@ -225,7 +225,7 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
 
     // special easy case of having no pylons
     int numPylons = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
-	int numGate = BWAPI::Broodwar->self()->incompleteUnitCount(BWAPI::UnitTypes::Protoss_Gateway);
+	int numGate = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Gateway);
     if (b.type.requiresPsi() && numPylons == 0)
     {
         return BWAPI::TilePositions::None;
@@ -252,28 +252,28 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
 			}
 		}
 	}
-	//else if (b.type == BWAPI::UnitTypes::Protoss_Forge) {
-	//	for (int j = midy; j != chokeTile.y; j += iy) {
-	//		for (int i = midx; i != chokeTile.x; i += ix) {
-	//			BWAPI::TilePosition pos(i, j);
-	//			if (canBuildHere(pos, b)) {
-	//				px = i;
-	//				py = j;
-	//				return pos;
-	//			}
-	//		}
-	//	}
-	//	for (int i = chokeTile.x; i != midx; i -= ix) {
-	//		for (int j = chokeTile.y; j != midy; j -= iy) {
-	//			BWAPI::TilePosition pos(i, j);
-	//			if (canBuildHere(pos, b)) {
-	//				return pos;
-	//			}
-	//		}
-	//	}
-	//}
-	else if (b.type == BWAPI::UnitTypes::Protoss_Gateway && numGate < 2) {
-		if (numGate < 2) {
+	else if (b.type == BWAPI::UnitTypes::Protoss_Forge) {
+		for (int j = midy; j != chokeTile.y; j += iy) {
+			for (int i = midx; i != chokeTile.x; i += ix) {
+				BWAPI::TilePosition pos(i, j);
+				if (canBuildHere(pos, b)) {
+					px = i;
+					py = j;
+					return pos;
+				}
+			}
+		}
+		for (int i = chokeTile.x; i != midx; i -= ix) {
+			for (int j = chokeTile.y; j != midy; j -= iy) {
+				BWAPI::TilePosition pos(i, j);
+				if (canBuildHere(pos, b)) {
+					return pos;
+				}
+			}
+		}
+	}
+	else if (b.type == BWAPI::UnitTypes::Protoss_Gateway && numGate < 3) {
+		if (numGate < 3) {
 			for (int i = midx; i != chokeTile.x; i += ix) {
 				for (int j = midy; j != chokeTile.y; j += iy) {
 					BWAPI::TilePosition pos(i, j);
