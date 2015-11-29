@@ -203,13 +203,12 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
 	BWTA::BaseLocation *home = BWTA::getStartLocation(BWAPI::Broodwar->self());
 	BWAPI::Position choke = BWTA::getNearestChokepoint(home->getTilePosition())->getCenter();
 	BWAPI::TilePosition chokeTile(choke);
-
 	int homex = home->getTilePosition().x;
 	int homey = home->getTilePosition().y;
 	int midx = (chokeTile.x + homex) / 2;
 	int midy = (chokeTile.y + homey) / 2;
-	static int px;
-	static int py;
+	static int px = midx;
+	static int py = midy;
 	static int change = 0;
 	//BWAPI::Broodwar->printf("Choke: %i, %i", chokeTile.x, chokeTile.y);
 	//BWAPI::Broodwar->printf("Mid: %i, %i", midx, midy);
@@ -227,117 +226,65 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
     // special easy case of having no pylons
     int numPylons = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
 	int numGate = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Gateway);
+	int numCan = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Photon_Cannon);
+
     if (b.type.requiresPsi() && numPylons == 0)
     {
         return BWAPI::TilePositions::None;
     }
 
 	// Brandons Code
-	//if (b.type == BWAPI::UnitTypes::Protoss_Pylon && numPylons == 0) {
-	//	for (int i = midx; i != chokeTile.x; i += ix) {
-	//		for (int j = midy; j != chokeTile.y; j += iy) {
-	//			BWAPI::TilePosition pos(i, j);
-	//			if (canBuildHere(pos, b)) {
-	//				px = i;
-	//				py = j;
-	//				return pos;
-	//			}
-	//		}
-	//	}
-	//	for (int i = midx; i != homex; i -= ix) {
-	//		for (int j = midy; j != homey; j -= iy) {
-	//			BWAPI::TilePosition pos(i, j);
-	//			if (canBuildHere(pos, b)) {
-	//				return pos;
-	//			}
-	//		}
-	//	}
-	//}
-	////else if (b.type == BWAPI::UnitTypes::Protoss_Forge) {
-	////	//for (int i = midx; i != homex; i -= ix) {
-	////	//	for (int j = midy; j != homey; j -= iy) {
-	////	//		BWAPI::TilePosition pos(i, j);
-	////	//		if (canBuildHere(pos, b)) {
-	////	//			return pos;
-	////	//		}
-	////	//	}
-	////	//}
-	////	for (int i = midx; i != chokeTile.x; i += ix) {
-	////		for (int j = midy; j != chokeTile.y; j += iy) {
-	////			BWAPI::TilePosition pos(i, j);
-	////			if (canBuildHere(pos, b)) {
-	////				return pos;
-	////			}
-	////		}
-	////	}
-	////	//for (int i = chokeTile.x; i != midx; i -= ix) {
-	////	//	for (int j = chokeTile.y; j != midy; j -= iy) {
-	////	//		BWAPI::TilePosition pos(i, j);
-	////	//		if (canBuildHere(pos, b)) {
-	////	//			return pos;
-	////	//		}
-	////	//	}
-	////	//}
-	////}
-	//else if (b.type == BWAPI::UnitTypes::Protoss_Gateway && numGate < 3) {
-	//	for (int i = px; i != chokeTile.x; i += ix) {
-	//		for (int j = py; j != chokeTile.y; j += iy) {
-	//			BWAPI::TilePosition pos(i, j);
-	//			//if (canBuildHereWithSpace(pos, b, 1, horizontalOnly)) {
-	//			if (canBuildHere(pos, b)) {
-	//				return pos;
-	//			}
-	//		}
-	//	}
-	//	
-	//}
+	if (b.type == BWAPI::UnitTypes::Protoss_Pylon && numPylons == 0) {
+		//int x = px;
+		//int y = py;
+		//if (numPylons == 0) {
+		int x = (chokeTile.x + midx) / 2;
+		int y = (chokeTile.y + midy) / 2;
+		//}
 
-	////	for (int i = chokeTile.x; i != homex; i -= ix) {
-	////		for (int j = chokeTile.y; j != homey; j -= iy) {
-	////			BWAPI::TilePosition pos(i, j);
-	////			if (canBuildHereWithSpace(pos, b, 1, horizontalOnly)) {
-	////				return pos;
-	////			}
-	////		}
-	////	}
-	////}
-	//else if (b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon) {
-	//	for (int i = px; i != homex; i -= ix) {
-	//		for (int j = py; j != homey; j -= iy) {
-	//			BWAPI::TilePosition pos(i, j);
-	//			if (canBuildHere(pos, b)) {
-	//				px = i;
-	//				py = j;
-	//				change = 1;
-	//				return pos;
-	//			}
-	//		}
-	//	}
-	//	for (int i = px; i != chokeTile.x; i += ix) {
-	//		for (int j = py; j != chokeTile.y; j += iy) {
-	//			BWAPI::TilePosition pos(i, j);
-	//			if (canBuildHere(pos, b)) {
-	//				return pos;
-	//			}
-	//		}
-	//	}
-	//}
-		//for (int i = px; i != homex; i -= ix) {
-		//	for (int j = py; j != homey; j -= iy) {
-		//		BWAPI::TilePosition pos(i, j);
-		//		if (canBuildHere(pos, b)) {
-		//			return pos;
-		//		}
-		//	}
-		//}
-		//for (int i = midx; i != homex; i -= ix) {
-		//	for (int j = midy; j != homey; j -= iy) {
-		//		BWAPI::TilePosition pos(i, j);
-		//		if (canBuildHere(pos, b)) {
-		//			return pos;
-		//		}
-		//	}
-		//}
+		int limit = 1500;
+		while (limit > 0) {
+			BWAPI::TilePosition pos(x, y);
+			if (canBuildHere(pos, b)) {
+				px = x;
+				py = y;
+				return pos;
+			}
+			x -= ix;
+			y -= iy;
+			limit--;
+		}
+	}
+	else if (b.type == BWAPI::UnitTypes::Protoss_Forge || (b.type == BWAPI::UnitTypes::Protoss_Gateway && numGate < 2) || b.type == BWAPI::UnitTypes::Protoss_Cybernetics_Core) {
+		int x = (chokeTile.x + midx) / 2;
+		int y = (chokeTile.y + midy) / 2;
+		int limit = 1500;
+		while (limit > 0) {
+			BWAPI::TilePosition pos(x, y);
+			if (canBuildHere(pos, b)) {
+				//px = x;
+				//py = y;
+				return pos;
+			}
+			x -= ix;
+			y -= iy;
+			limit--;
+		}
+	}
+	else if (b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon) {
+		int x = px;
+		int y = py;
+		int limit = 1500;
+		while (limit > 0) {
+			BWAPI::TilePosition pos(x, y);
+			if (canBuildHere(pos, b)) {
+				return pos;
+			}
+			x -= ix;
+			y -= iy;
+			limit--;
+		}
+	}
 
 	
 
@@ -350,6 +297,11 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
 		if (canBuildHereWithSpace(closestToBuilding[i], b, buildDist, horizontalOnly))
 		//if (canBuildHere(closestToBuilding[i], b))
 		{
+			if (b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon) {
+				px = closestToBuilding[i].x;
+				py = closestToBuilding[i].y;
+			}
+
 			double ms = t.getElapsedTimeInMilliSec();
 			//BWAPI::Broodwar->printf("Building Placer Took %d iterations, lasting %lf ms @ %lf iterations/ms, %lf setup ms", i, ms, (i / ms), ms1);
 
