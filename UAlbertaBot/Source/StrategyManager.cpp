@@ -203,6 +203,7 @@ const MetaPairVector StrategyManager::getNotABotBuildOrderGoal() const
 		int numCyber = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Cybernetics_Core);
 		int numCannon = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Photon_Cannon);
 		int numHT = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_High_Templar);
+		int numZealot = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Zealot);
 
 		int d_wanted = 3;
 
@@ -222,9 +223,16 @@ const MetaPairVector StrategyManager::getNotABotBuildOrderGoal() const
 
 		if (numDragoons > 14) {
 			goal.push_back(MetaPair(BWAPI::TechTypes::Psionic_Storm, 1));
-			if (numHT <= 6){
-				goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_High_Templar, 2));
-			}
+			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_High_Templar, numHT + 2));
+		}
+
+		// if we are building too many HT we can't build dragoons, so just make some zealots
+		// get rid of the minerals and call it a day
+		if ((numDragoons > 14) && (numHT < 8)) {
+			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_High_Templar, numHT + 2));
+			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Zealot, numZealot + 4));
+			return goal;
+
 		}
 
 		if (numDragoons > 8){
@@ -232,12 +240,6 @@ const MetaPairVector StrategyManager::getNotABotBuildOrderGoal() const
 		}
 
 		int dragoonsWanted = numDragoons > 0 ? numDragoons + d_wanted : 2;
-
-
-		if (BWAPI::Broodwar->self()->minerals() > 800){
-			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Zealot, BWAPI::Broodwar->self()->minerals()/3 ));
-		}
-
 
 
 

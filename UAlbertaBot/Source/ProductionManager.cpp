@@ -125,10 +125,11 @@ void ProductionManager::update()
         {
 		    BWAPI::Broodwar->printf("Supply deadlock detected, building supply!");
         }
-		BWAPI::Broodwar->printf("Supply deadlock detected, building supply!");
 
 		queue.queueAsHighestPriority(MetaType(BWAPI::Broodwar->self()->getRace().getSupplyProvider()), true);
-		BWAPI::Broodwar->printf("I should've made supply here??");
+		if (BWAPI::Broodwar->self()->minerals() > 1000){
+			queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Protoss_Nexus), true);
+		}
 	}
 
 	// if they have cloaked units get a new goal asap

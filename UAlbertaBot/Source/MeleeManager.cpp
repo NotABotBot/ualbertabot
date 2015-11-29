@@ -29,6 +29,15 @@ void MeleeManager::executeMicro(const std::vector<BWAPI::UnitInterface *> & targ
 		// if the order is to attack or defend
 		if (order.type == order.Attack || order.type == order.Defend) {
 
+			// run away if we meet the retreat critereon
+			if (meleeUnitShouldRetreat(meleeUnit)){
+
+				BWAPI::Broodwar->drawTextScreen(200, 150, "STEP OFF");
+				BWAPI::Position fleeTo(BWAPI::Broodwar->self()->getStartLocation());
+
+				MicroManager::smartMove(meleeUnit, fleeTo);
+			}
+
 			// if there are targets
 			if (!meleeUnitTargets.empty())
 			{
@@ -152,3 +161,10 @@ BWAPI::UnitInterface* MeleeManager::closestMeleeUnit(BWAPI::UnitInterface* targe
 	
 	return closest;
 }
+
+bool MeleeManager::meleeUnitShouldRetreat(BWAPI::Unit meleeUnit){
+
+	if (meleeUnit->getShields() == 0 || meleeUnit->getHitPoints() < 10){
+		return false;}
+
+	return true;}
