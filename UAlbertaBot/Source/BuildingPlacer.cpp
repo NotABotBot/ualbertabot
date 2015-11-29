@@ -252,30 +252,36 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
 			}
 		}
 	}
-	else if (b.type == BWAPI::UnitTypes::Protoss_Forge) {
-		for (int j = midy; j != chokeTile.y; j += iy) {
-			for (int i = midx; i != chokeTile.x; i += ix) {
-				BWAPI::TilePosition pos(i, j);
-				if (canBuildHere(pos, b)) {
-					px = i;
-					py = j;
-					return pos;
-				}
-			}
-		}
-		for (int i = chokeTile.x; i != midx; i -= ix) {
-			for (int j = chokeTile.y; j != midy; j -= iy) {
-				BWAPI::TilePosition pos(i, j);
-				if (canBuildHere(pos, b)) {
-					return pos;
-				}
-			}
-		}
-	}
-	else if (b.type == BWAPI::UnitTypes::Protoss_Gateway && numGate < 3) {
+	//else if (b.type == BWAPI::UnitTypes::Protoss_Forge) {
+	//	//for (int i = midx; i != homex; i -= ix) {
+	//	//	for (int j = midy; j != homey; j -= iy) {
+	//	//		BWAPI::TilePosition pos(i, j);
+	//	//		if (canBuildHere(pos, b)) {
+	//	//			return pos;
+	//	//		}
+	//	//	}
+	//	//}
+	//	for (int i = midx; i != chokeTile.x; i += ix) {
+	//		for (int j = midy; j != chokeTile.y; j += iy) {
+	//			BWAPI::TilePosition pos(i, j);
+	//			if (canBuildHere(pos, b)) {
+	//				return pos;
+	//			}
+	//		}
+	//	}
+	//	//for (int i = chokeTile.x; i != midx; i -= ix) {
+	//	//	for (int j = chokeTile.y; j != midy; j -= iy) {
+	//	//		BWAPI::TilePosition pos(i, j);
+	//	//		if (canBuildHere(pos, b)) {
+	//	//			return pos;
+	//	//		}
+	//	//	}
+	//	//}
+	//}
+	else if (b.type == BWAPI::UnitTypes::Protoss_Gateway && numGate < 2) {
 		if (numGate < 3) {
-			for (int i = midx; i != chokeTile.x; i += ix) {
-				for (int j = midy; j != chokeTile.y; j += iy) {
+			for (int i = px; i != chokeTile.x; i += ix) {
+				for (int j = py; j != chokeTile.y; j += iy) {
 					BWAPI::TilePosition pos(i, j);
 					//if (canBuildHereWithSpace(pos, b, 1, horizontalOnly)) {
 					if (canBuildHere(pos, b)) {
@@ -284,42 +290,55 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
 				}
 			}
 		}
+	}
 
-		for (int i = chokeTile.x; i != homex; i -= ix) {
-			for (int j = chokeTile.y; j != homey; j -= iy) {
+	//	for (int i = chokeTile.x; i != homex; i -= ix) {
+	//		for (int j = chokeTile.y; j != homey; j -= iy) {
+	//			BWAPI::TilePosition pos(i, j);
+	//			if (canBuildHereWithSpace(pos, b, 1, horizontalOnly)) {
+	//				return pos;
+	//			}
+	//		}
+	//	}
+	//}
+	else if (b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon) {
+		for (int i = px; i != homex; i -= ix) {
+			for (int j = py; j != homey; j -= iy) {
 				BWAPI::TilePosition pos(i, j);
-				if (canBuildHereWithSpace(pos, b, 1, horizontalOnly)) {
+				if (canBuildHere(pos, b)) {
+					px = i;
+					py = j;
 					return pos;
 				}
 			}
 		}
-	}
-	else if (b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon) {
-		for (int i = midx; i != homex; i -= ix) {
-			for (int j = midy; j != homey; j -= iy) {
+		for (int i = px; i != chokeTile.x; i += ix) {
+			for (int j = py; j != chokeTile.y; j += iy) {
 				BWAPI::TilePosition pos(i, j);
 				if (canBuildHere(pos, b)) {
 					return pos;
 				}
 			}
 		}
-		//for (int i = midx; i != chokeTile.x; i += ix) {
-		//	for (int j = midy; j != chokeTile.y; j += iy) {
+	}
+		//for (int i = px; i != homex; i -= ix) {
+		//	for (int j = py; j != homey; j -= iy) {
 		//		BWAPI::TilePosition pos(i, j);
 		//		if (canBuildHere(pos, b)) {
 		//			return pos;
 		//		}
 		//	}
 		//}
-		for (int i = homex; i != chokeTile.x; i += ix) {
-			for (int j = homey; j != chokeTile.y; j += iy) {
-				BWAPI::TilePosition pos(i, j);
-				if (canBuildHere(pos, b)) {
-					return pos;
-				}
-			}
-		}
-	}
+		//for (int i = midx; i != homex; i -= ix) {
+		//	for (int j = midy; j != homey; j -= iy) {
+		//		BWAPI::TilePosition pos(i, j);
+		//		if (canBuildHere(pos, b)) {
+		//			return pos;
+		//		}
+		//	}
+		//}
+
+	
 
 	// iterate through the list until we've found a suitable location
 	for (size_t i(0); i < closestToBuilding.size(); ++i)
