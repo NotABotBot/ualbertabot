@@ -217,28 +217,29 @@ void MicroManager::smartHighTemplarAttackUnit(BWAPI::UnitInterface* attacker, BW
 				}
 				collateralDamage = 0;
 			}
-			if (attacker->getEnergy() <= 50){
-				int maxDistance = 10000000;
-				for (BWAPI::UnitInterface* unit : BWAPI::Broodwar->self()->getUnits())
-				{
-					if (unit->getType() == BWAPI::UnitTypes::Protoss_High_Templar){
-						if (unit->BWAPI::UnitInterface::getDistance(attacker) < maxDistance && unit->getEnergy() <= 70){
-							if (nearestTemplar != NULL){
-								if (nearestTemplar != attacker){
-									nearestTemplar = unit;
-									maxDistance = nearestTemplar->getDistance(attacker);
-								}
-							}
-						}
+		}
+	}
+	if (attacker->getEnergy() <= 70){
+		BWAPI::Unitset fellows = attacker->getUnitsInRadius(96);
+		int maxDistance = 10000000;
+		for (BWAPI::UnitInterface* HT : fellows)
+		{
+			if (HT->getPlayer() == BWAPI::Broodwar->self() && HT->getType() == BWAPI::UnitTypes::Protoss_High_Templar)
+			{
+				if (HT->BWAPI::UnitInterface::getDistance(attacker) < maxDistance && HT->getEnergy() <= 70){
+					if (nearestTemplar != attacker){
+						nearestTemplar = HT;
+						maxDistance = nearestTemplar->getDistance(attacker);
 					}
-				}
-				if (nearestTemplar != NULL&&attacker != NULL&& attacker != nearestTemplar){
-					attacker->useTech(BWAPI::TechTypes::Archon_Warp, nearestTemplar);
 				}
 			}
 		}
+		if (nearestTemplar != NULL&&attacker != NULL&& attacker != nearestTemplar){
+			attacker->useTech(BWAPI::TechTypes::Archon_Warp, nearestTemplar);
+		}
+
 	}
-}
+	}
 void MicroManager::smartAttackMove(BWAPI::UnitInterface* attacker, BWAPI::Position targetPosition) const
 {
 	assert(attacker);
