@@ -185,18 +185,18 @@ void MicroManager::smartAttackUnit(BWAPI::UnitInterface* attacker, BWAPI::UnitIn
 				if (target->isUnderStorm() == false){
 					if (attacker->getEnergy() >= 75){
 						BWAPI::Unitset stormedUnits = target->getUnitsInRadius(48);
-						for (BWAPI::UnitInterface* badGuys : stormedUnits)
+						for (BWAPI::UnitInterface* unitValueChecker : stormedUnits)
 						{
-							if (badGuys->getPlayer() == BWAPI::Broodwar->enemy())
+							if (unitValueChecker->getPlayer() == BWAPI::Broodwar->enemy())
 							{
-								++collateralDamage;
+								collateralDamage += unitValueChecker->getType().height()*unitValueChecker->getType().width();
 							}
-							if (badGuys->getPlayer() == BWAPI::Broodwar->self())
+							if (unitValueChecker->getPlayer() == BWAPI::Broodwar->self())
 							{
-								--collateralDamage;
+								collateralDamage -= unitValueChecker->getType().height()*unitValueChecker->getType().width();
 							}
 						}
-						if (collateralDamage > 2){
+						if (collateralDamage >= 768){
 							attacker->useTech(BWAPI::TechTypes::Psionic_Storm, target->getPosition());
 						}
 						collateralDamage = 0;
