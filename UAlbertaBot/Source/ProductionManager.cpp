@@ -129,6 +129,8 @@ void ProductionManager::update()
 		queue.queueAsHighestPriority(MetaType(BWAPI::Broodwar->self()->getRace().getSupplyProvider()), true);
 		if (BWAPI::Broodwar->self()->minerals() > 1000){
 			queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Protoss_Nexus), true);
+			queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Protoss_Pylon), true);
+
 		}
 	}
 
@@ -484,7 +486,7 @@ bool ProductionManager::detectBuildOrderDeadlock()
 		time_check = 0;
 	}
 
-	if (time_check > 100) {
+	if (time_check > 50) {
 		time_check = 0;
 		return true;
 	}
