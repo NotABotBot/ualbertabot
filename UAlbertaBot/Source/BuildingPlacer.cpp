@@ -251,42 +251,42 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
 			limit--;
 		}
 	}
-	else if (b.type == BWAPI::UnitTypes::Protoss_Forge || (b.type == BWAPI::UnitTypes::Protoss_Gateway && numGate == 0)) {
-		//int x = (chokeTile.x + midx) / 2;
-		//int y = (chokeTile.y + midy) / 2;
-		//int x = midx;
-		//int y = midy;
-		int x = homex;
-		int y = homey;
-		int limit = 1500;
-		while (limit > 0) {
-			BWAPI::TilePosition pos(x, y);
-			if (canBuildHere(pos, b)) {
-				return pos;
-			}
-			x += ix;
-			y += iy;
-			limit--;
-		}
-	}
-	else if (b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon) {
-		int x = homex;
-		int y = homey;
-		//int x = midx;
-		//int y = midy;
-		//int x = px;
-		//int y = py;
-		int limit = 1500;
-		while (limit > 0) {
-			BWAPI::TilePosition pos(x, y);
-			if (canBuildHere(pos, b)) {
-				return pos;
-			}
-			x += ix;
-			y += iy;
-			limit--;
-		}
-	}
+	//else if (b.type == BWAPI::UnitTypes::Protoss_Forge) {
+	//	//int x = (chokeTile.x + midx) / 2;
+	//	//int y = (chokeTile.y + midy) / 2;
+	//	//int x = midx;
+	//	//int y = midy;
+	//	int x = homex;
+	//	int y = homey;
+	//	int limit = 1500;
+	//	while (limit > 0) {
+	//		BWAPI::TilePosition pos(x, y);
+	//		if (canBuildHere(pos, b)) {
+	//			return pos;
+	//		}
+	//		x += ix;
+	//		y += iy;
+	//		limit--;
+	//	}
+	//}
+	//else if (b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon) {
+	//	int x = homex;
+	//	int y = homey;
+	//	//int x = midx;
+	//	//int y = midy;
+	//	//int x = px;
+	//	//int y = py;
+	//	int limit = 1500;
+	//	while (limit > 0) {
+	//		BWAPI::TilePosition pos(x, y);
+	//		if (canBuildHere(pos, b)) {
+	//			return pos;
+	//		}
+	//		x += ix;
+	//		y += iy;
+	//		limit--;
+	//	}
+	//}
 
 
 	
@@ -294,10 +294,10 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
 	// iterate through the list until we've found a suitable location
 	for (size_t i(0); i < closestToBuilding.size(); ++i)
 	{
-		buildDist = 0;
-		if (b.type == BWAPI::UnitTypes::Protoss_Gateway || b.type == BWAPI::UnitTypes::Protoss_Pylon) {
-			buildDist = 2;
-		}
+		//buildDist = 1;
+		//if (b.type == BWAPI::UnitTypes::Protoss_Gateway || b.type == BWAPI::UnitTypes::Protoss_Pylon) {
+		//	buildDist = 1;
+		//}
 		if (canBuildHereWithSpace(closestToBuilding[i], b, buildDist, horizontalOnly))
 		//if (canBuildHere(closestToBuilding[i], b))
 		{
@@ -306,6 +306,11 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
 
 			return closestToBuilding[i];
 		}
+		//else {
+		//	if (canBuildHere(closestToBuilding[i], b)) {
+		//		return closestToBuilding[i];
+		//	}
+		//}
 	}
 
 	double ms = t.getElapsedTimeInMilliSec();
