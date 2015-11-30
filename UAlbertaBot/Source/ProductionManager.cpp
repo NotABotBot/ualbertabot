@@ -128,11 +128,10 @@ void ProductionManager::update()
 
 		queue.queueAsHighestPriority(MetaType(BWAPI::Broodwar->self()->getRace().getSupplyProvider()), true);
 		if (BWAPI::Broodwar->self()->minerals() > 1000){
-			BWAPI::Broodwar->printf("Clear queue and push nexus and pylon");
 			queue.clearAll();
 			queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Protoss_Nexus), true);
 			queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Protoss_Pylon), true);
-
+			return;
 		}
 	}
 

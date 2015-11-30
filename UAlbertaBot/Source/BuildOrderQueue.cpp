@@ -16,6 +16,7 @@ void BuildOrderQueue::clearAll()
 	// clear the queue
 	queue.clear();
 
+
 	// reset the priorities
 	highestPriority = 0;
 	lowestPriority = 0;
