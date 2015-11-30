@@ -128,6 +128,7 @@ void ProductionManager::update()
 
 		queue.queueAsHighestPriority(MetaType(BWAPI::Broodwar->self()->getRace().getSupplyProvider()), true);
 		if (BWAPI::Broodwar->self()->minerals() > 1000){
+			queue.clearAll();
 			queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Protoss_Nexus), true);
 			queue.queueAsHighestPriority(MetaType(BWAPI::UnitTypes::Protoss_Pylon), true);
 
