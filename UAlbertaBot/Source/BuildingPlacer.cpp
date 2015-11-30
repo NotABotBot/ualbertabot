@@ -200,10 +200,9 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
     SparCraft::Timer t;
 	t.start();
 
-	BWTA::BaseLocation *home = BWTA::getStartLocation(BWAPI::Broodwar->self());
-	BWAPI::Position choke = BWTA::getNearestChokepoint(home->getTilePosition())->getCenter();
-	BWAPI::TilePosition chokeTile(choke);
-	double width = BWTA::getNearestChokepoint(home->getTilePosition())->getWidth();
+	BWTA::BaseLocation *home = findHome();
+	BWAPI::TilePosition chokeTile = findChoke(home);
+
 	int homex = home->getTilePosition().x;
 	int homey = home->getTilePosition().y;
 	int midx = (chokeTile.x + homex) / 2;
@@ -232,85 +231,30 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
     }
 
 	if (b.type == BWAPI::UnitTypes::Protoss_Pylon && numPylons == 0) {
-		//int x = (chokeTile.x + midx) / 2;
-		//int x = midx;
-		//int y = midy;
-		//int y = (chokeTile.y + midy) / 2;
-		int x = homex;
-		int y = homey;
-		int limit = 1500;
-		while (limit > 0) {
-			BWAPI::TilePosition pos(x, y);
-			if (canBuildHere(pos, b)) {
-				px = x;
-				py = y;
-				return pos;
-			}
-			x += ix;
-			y += iy;
-			limit--;
-		}
+		return drawPylon(midx, midy, ix, iy, b);
 	}
-	//else if (b.type == BWAPI::UnitTypes::Protoss_Forge) {
-	//	//int x = (chokeTile.x + midx) / 2;
-	//	//int y = (chokeTile.y + midy) / 2;
-	//	//int x = midx;
-	//	//int y = midy;
-	//	int x = homex;
-	//	int y = homey;
-	//	int limit = 1500;
-	//	while (limit > 0) {
-	//		BWAPI::TilePosition pos(x, y);
-	//		if (canBuildHere(pos, b)) {
-	//			return pos;
-	//		}
-	//		x += ix;
-	//		y += iy;
-	//		limit--;
-	//	}
-	//}
-	//else if (b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon) {
-	//	int x = homex;
-	//	int y = homey;
-	//	//int x = midx;
-	//	//int y = midy;
-	//	//int x = px;
-	//	//int y = py;
-	//	int limit = 1500;
-	//	while (limit > 0) {
-	//		BWAPI::TilePosition pos(x, y);
-	//		if (canBuildHere(pos, b)) {
-	//			return pos;
-	//		}
-	//		x += ix;
-	//		y += iy;
-	//		limit--;
-	//	}
-	//}
-
-
-	
+	/*
+	else if (b.type == BWAPI::UnitTypes::Protoss_Forge) {
+		return drawForge(midx, midy, ix, iy, b);
+	}
+	else if (b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon) {
+		return drawProtonCannon(homex, homey, ix, iy, b);
+	}
+	else if (b.type == BWAPI::UnitTypes::Protoss_Gateway) {
+		return drawGateway(homex, homey, ix, iy, b);
+	}
+	*/
 
 	// iterate through the list until we've found a suitable location
 	for (size_t i(0); i < closestToBuilding.size(); ++i)
 	{
-		//buildDist = 1;
-		//if (b.type == BWAPI::UnitTypes::Protoss_Gateway || b.type == BWAPI::UnitTypes::Protoss_Pylon) {
-		//	buildDist = 1;
-		//}
 		if (canBuildHereWithSpace(closestToBuilding[i], b, buildDist, horizontalOnly))
-		//if (canBuildHere(closestToBuilding[i], b))
 		{
 			double ms = t.getElapsedTimeInMilliSec();
 			//BWAPI::Broodwar->printf("Building Placer Took %d iterations, lasting %lf ms @ %lf iterations/ms, %lf setup ms", i, ms, (i / ms), ms1);
 
 			return closestToBuilding[i];
 		}
-		//else {
-		//	if (canBuildHere(closestToBuilding[i], b)) {
-		//		return closestToBuilding[i];
-		//	}
-		//}
 	}
 
 	double ms = t.getElapsedTimeInMilliSec();
@@ -318,6 +262,69 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
 	
 
 	return  BWAPI::TilePositions::None;
+}
+
+BWAPI::TilePosition BuildingPlacer::drawPylon(int x, int y, int ix, int iy, Building b) const {
+	int limit = 1500;
+	while (limit > 0) {
+		BWAPI::TilePosition pos(x, y);
+		if (canBuildHere(pos, b)) {
+			return pos;
+		}
+		x += ix;
+		y += iy;
+		limit--;
+	}
+}
+
+BWAPI::TilePosition BuildingPlacer::drawForge(int x, int y, int ix, int iy, Building b) const {
+	int limit = 1500;
+	while (limit > 0) {
+		BWAPI::TilePosition pos(x, y);
+		if (canBuildHere(pos, b)) {
+			return pos;
+		}
+		x += ix;
+		y += iy;
+		limit--;
+	}
+
+}
+
+BWAPI::TilePosition BuildingPlacer::drawProtonCannon(int x, int y, int ix, int iy, Building b) const {
+	int limit = 1500;
+	while (limit > 0) {
+		BWAPI::TilePosition pos(x, y);
+		if (canBuildHere(pos, b)) {
+			return pos;
+		}
+		x += ix;
+		y += iy;
+		limit--;
+	}
+}
+
+BWAPI::TilePosition BuildingPlacer::drawGateway(int x, int y, int ix, int iy, Building b) const {
+	int limit = 1500;
+	while (limit > 0) {
+		BWAPI::TilePosition pos(x, y);
+		if (canBuildHere(pos, b)) {
+			return pos;
+		}
+		x += ix;
+		y += iy;
+		limit--;
+	}
+}
+
+BWTA::BaseLocation* BuildingPlacer::findHome() const {
+	return BWTA::getStartLocation(BWAPI::Broodwar->self());
+}
+
+BWAPI::TilePosition BuildingPlacer::findChoke(BWTA::BaseLocation* home) const {
+	BWAPI::Position choke = BWTA::getNearestChokepoint(home->getTilePosition())->getCenter();
+	BWAPI::TilePosition chokeTile(choke);
+	return chokeTile;
 }
 
 bool BuildingPlacer::tileOverlapsBaseLocation(BWAPI::TilePosition tile, BWAPI::UnitType type) const

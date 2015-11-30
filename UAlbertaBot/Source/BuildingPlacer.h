@@ -54,6 +54,15 @@ class BuildingPlacer
 	void					computeResourceBox();
 	
 	BWAPI::TilePosition		getRefineryPosition();
+
+	// Custom functions
+	BWAPI::TilePosition			drawPylon(int x, int y, int ix, int iy, Building b) const;
+	BWAPI::TilePosition			drawProtonCannon(int x, int y, int ix, int iy, Building b) const;
+	BWAPI::TilePosition			drawForge(int x, int y, int ix, int iy, Building b) const;
+	BWAPI::TilePosition			drawGateway(int x, int y, int ix, int iy, Building b) const;
+
+	BWTA::BaseLocation*			findHome() const;
+	BWAPI::TilePosition			findChoke(BWTA::BaseLocation* home) const;
 	
 };
 }

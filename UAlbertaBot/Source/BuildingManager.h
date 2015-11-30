@@ -62,8 +62,5 @@ public:
 	void						drawBuildingInformation(int x, int y);
 
     std::vector<BWAPI::UnitType> buildingsQueued();
-
-	// Custom functions
-
 };
 }
