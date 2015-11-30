@@ -199,6 +199,7 @@ const MetaPairVector StrategyManager::getNotABotBuildOrderGoal() const
 		int numDragoons = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Dragoon);
 		int numProbes = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Probe);
 		int numNexusCompleted = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Nexus);
+		int numPylonAll = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Pylon);
 		int numNexusAll = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Nexus);
 		int numCyber = BWAPI::Broodwar->self()->completedUnitCount(BWAPI::UnitTypes::Protoss_Cybernetics_Core);
 		int numCannon = BWAPI::Broodwar->self()->allUnitCount(BWAPI::UnitTypes::Protoss_Photon_Cannon);
@@ -272,6 +273,7 @@ const MetaPairVector StrategyManager::getNotABotBuildOrderGoal() const
 		if (expandProtossZealotRush())
 		{
 			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Nexus, numNexusAll + 1));
+			goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Pylon, numPylonAll + 1));
 		}
 
 		goal.push_back(MetaPair(BWAPI::UnitTypes::Protoss_Dragoon, dragoonsWanted));		

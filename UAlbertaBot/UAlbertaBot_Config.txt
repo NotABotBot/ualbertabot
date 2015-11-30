@@ -75,9 +75,9 @@
     
     "Strategy" :
     {
-        "ProtossStrategyName"   : "Protoss_ZealotRush",
+        "ProtossStrategyName"   : "Protoss_DragoonRush",
         "TerranStrategyName"    : "Terran_MarineRush",
-        "ZergStrategyName"      : "Zerg_ZerglingRush",
+        "ZergStrategyName"      : "Zerg_3HatchMuta",
         
         "ReadDirectory"         : "bwapi-data/write/",
         "WriteDirectory"        : "bwapi-data/write/",
