@@ -66,7 +66,7 @@ void RangedManager::kiteTarget(BWAPI::UnitInterface* rangedUnit, BWAPI::UnitInte
 		range = 6*32;
 	}
 
-	// determine whether the target can be kited
+	// Randy::Commenting this out allows dragoons to shuffle and save themselves
 	/*
 	if (range <= target->getType().groundWeapon().maxRange())
 	{
