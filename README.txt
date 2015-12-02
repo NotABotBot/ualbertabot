@@ -22,4 +22,6 @@ MeleeManager		 executeMicro(), meleeUnitStepOff()
 
 BuildingPlacer		 getBuildLocationNear(), drawPylon(), drawForge(), 
 			 drawPhotonCannon(), drawGateway(), findHome(), findChoke()
+			 
+MircoManager		 smartHighTemplarAttackUnit(), smartAttackUnit(), smartAttackMove(), smartMove()
 
