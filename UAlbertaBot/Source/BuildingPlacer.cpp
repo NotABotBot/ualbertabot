@@ -231,23 +231,42 @@ BWAPI::TilePosition BuildingPlacer::getBuildLocationNear(const Building & b, int
     }
 
 	if (b.type == BWAPI::UnitTypes::Protoss_Pylon && numPylons == 0) {
-		return drawPylon(midx, midy, ix, iy, b);
+		BWAPI::TilePosition pos = drawPylon(midx, midy, ix, iy, b);
+		if (pos != BWAPI::TilePositions::None) {
+			px = pos.x;
+			py = pos.y;
+			return pos;
+		}
+		
 	}
-	/*
+	
 	else if (b.type == BWAPI::UnitTypes::Protoss_Forge) {
-		return drawForge(midx, midy, ix, iy, b);
+		BWAPI::TilePosition pos = drawForge(midx, midy, ix, iy, b);
+		if (pos != BWAPI::TilePositions::None) {
+			return pos;
+		}
 	}
+	
 	else if (b.type == BWAPI::UnitTypes::Protoss_Photon_Cannon) {
-		return drawProtonCannon(homex, homey, ix, iy, b);
+		//int qx = (homex + midx) / 2;
+		//int qy = (homey + midy) / 2;
+		BWAPI::TilePosition pos = drawProtonCannon(homex, homey, ix, iy, b);
+		if (pos != BWAPI::TilePositions::None) {
+			return pos;
+		}
 	}
-	else if (b.type == BWAPI::UnitTypes::Protoss_Gateway) {
-		return drawGateway(homex, homey, ix, iy, b);
-	}
-	*/
+
+	//else if (b.type == BWAPI::UnitTypes::Protoss_Gateway && numGate == 0) {
+	//	return drawGateway(homex, homey, ix, iy, b);
+	//}
+	
 
 	// iterate through the list until we've found a suitable location
 	for (size_t i(0); i < closestToBuilding.size(); ++i)
 	{
+		if (b.type == BWAPI::UnitTypes::Protoss_Gateway && numGate == 0) {
+			buildDist = 0;
+		}
 		if (canBuildHereWithSpace(closestToBuilding[i], b, buildDist, horizontalOnly))
 		{
 			double ms = t.getElapsedTimeInMilliSec();
@@ -275,33 +294,69 @@ BWAPI::TilePosition BuildingPlacer::drawPylon(int x, int y, int ix, int iy, Buil
 		y += iy;
 		limit--;
 	}
+	return  BWAPI::TilePositions::None;
 }
 
 BWAPI::TilePosition BuildingPlacer::drawForge(int x, int y, int ix, int iy, Building b) const {
 	int limit = 1500;
 	while (limit > 0) {
 		BWAPI::TilePosition pos(x, y);
-		if (canBuildHere(pos, b)) {
+		//if (canBuildHere(pos, b)) {
+		if (canBuildHereWithSpace(pos, b, 0, false)) {
 			return pos;
 		}
 		x += ix;
 		y += iy;
 		limit--;
 	}
+	return  BWAPI::TilePositions::None;
 
 }
 
 BWAPI::TilePosition BuildingPlacer::drawProtonCannon(int x, int y, int ix, int iy, Building b) const {
+	int tmpx = x;
+	int tmpy = y;
 	int limit = 1500;
 	while (limit > 0) {
 		BWAPI::TilePosition pos(x, y);
 		if (canBuildHere(pos, b)) {
+		//if (canBuildHereWithSpace(pos, b, 0, false)) {
 			return pos;
 		}
 		x += ix;
+		BWAPI::TilePosition pos2(x, y);
+		if (canBuildHere(pos2, b)) {
+		//if (canBuildHereWithSpace(pos, b, 0, false)) {
+			return pos2;
+		}
 		y += iy;
 		limit--;
 	}
+	limit = 1500;
+	while (limit > 0) {
+		BWAPI::TilePosition pos(x, y);
+		if (canBuildHere(pos, b)) {
+			//if (canBuildHereWithSpace(pos, b, 0, false)) {
+			return pos;
+		}
+		tmpx -= ix;
+		BWAPI::TilePosition pos2(x, y);
+		if (canBuildHere(pos2, b)) {
+			//if (canBuildHereWithSpace(pos, b, 0, false)) {
+			return pos2;
+		}
+		tmpy -= iy;
+		limit--;
+	}
+	//for (int i = x;; i += ix) {
+	//	for (int j = y;; j += iy) {
+	//		BWAPI::TilePosition pos(i, j);
+	//		if (canBuildHere(pos, b)) {
+	//			return pos;
+	//		}
+	//	}
+	//}
+	return  BWAPI::TilePositions::None;
 }
 
 BWAPI::TilePosition BuildingPlacer::drawGateway(int x, int y, int ix, int iy, Building b) const {
@@ -309,12 +364,19 @@ BWAPI::TilePosition BuildingPlacer::drawGateway(int x, int y, int ix, int iy, Bu
 	while (limit > 0) {
 		BWAPI::TilePosition pos(x, y);
 		if (canBuildHere(pos, b)) {
+			//if (canBuildHereWithSpace(pos, b, 0, false)) {
 			return pos;
 		}
 		x += ix;
+		BWAPI::TilePosition pos2(x, y);
+		if (canBuildHere(pos2, b)) {
+			//if (canBuildHereWithSpace(pos, b, 0, false)) {
+			return pos2;
+		}
 		y += iy;
 		limit--;
 	}
+	return  BWAPI::TilePositions::None;
 }
 
 BWTA::BaseLocation* BuildingPlacer::findHome() const {
