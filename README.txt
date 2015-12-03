@@ -7,7 +7,7 @@
 /**************************************
 *	How to Compile and Run
 ***************************************/
-Simply importing the porject in Visual Studio and compiling the project should be sufficient,
+Simply importing the project in Visual Studio and compiling the project is sufficient,
 there were no special requirements needed to run and compile during testing.
 
 /**************************************
@@ -23,5 +23,5 @@ MeleeManager		 executeMicro(), meleeUnitStepOff()
 BuildingPlacer		 getBuildLocationNear(), drawPylon(), drawForge(), 
 			 drawPhotonCannon(), drawGateway(), findHome(), findChoke()
 			 
-MircoManager		 smartHighTemplarAttackUnit(), smartAttackUnit(), smartAttackMove(), smartMove()
+MicroManager		 smartHighTemplarAttackUnit(), smartAttackUnit(), smartAttackMove(), smartMove()
 
